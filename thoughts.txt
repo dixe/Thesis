@@ -1,0 +1,55 @@
+reserch the problem so I have an understanding of the problem better
+
+
+wirte to pawl, maybe he has some background knowleage
+
+
+check if sorts are different in the given data
+
+
+can we split into different sorts, that might improve results
+
+
+might prove that they have some importent 
+
+
+learn structure in images using autoencoders
+
+
+deeplearning book autoendocers
+
+
+check references around 27
+
+
+check if lightning is consistent
+
+
+is colors important, or just use grayscale
+
+
+check average size of the broken circles, to find a fixed size
+
+
+statistics on the size, histogram ect.
+
+
+make sure keras can use pretraining of models
+
+
+how to pretrain, get imagenet
+
+
+lituerre review
+What has other people done when we have few training examples, pretraining data arugmentation ect.
+
+
+
+to start
+windows within region of interrest
+
+
+data arugmentation by shifting in different
+
+
+make test set later

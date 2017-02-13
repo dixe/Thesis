@@ -1,0 +1,10 @@
+on imgpuX:
+jupyter notebook --no-browser --port=8889
+
+on local:
+ssh -N -f -L localhost:8888:localhost:8889 imgpuX
+
+on localbrowser:
+localhost:8888, use token from imgpuX
+
+
