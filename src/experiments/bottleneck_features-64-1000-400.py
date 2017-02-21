@@ -25,13 +25,13 @@ from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 
 # path to the model weights file.
-weights_path = '../keras/examples/vgg16_weights.h5'
+weights_path = 'vgg16_weights.h5'
 top_model_weights_path = 'bottleneck_fc_model.h5'
 # dimensions of our images.
-img_width, img_height = 150, 150
+img_width, img_height = 64, 64
 
-train_data_dir = 'data/train'
-validation_data_dir = 'data/validation'
+train_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/train'
+validation_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/validation'
 nb_train_samples = 2000
 nb_validation_samples = 800
 nb_epoch = 50
