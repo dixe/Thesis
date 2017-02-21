@@ -1,0 +1,6 @@
+Run with 'CUDA_VISIBLE_DVICES=#' to stop tensorflow from using all avaliable GPUS
+
+Name: train-64-1000-400
+Description: 64x64 images, 1000 whole, 1000 broken, 400 valid each
+Results: 0.77 validation acc
+Network: ex-64-1000-400-vis.png
