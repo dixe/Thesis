@@ -55,7 +55,7 @@ with tf.device('/gpu:1'):
     validation_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/validation'
     nb_train_samples = 2000
     nb_validation_samples = 800
-    nb_epoch = 50
+    nb_epoch = 1
 
 
 
@@ -78,6 +78,8 @@ with tf.device('/gpu:1'):
     model.add(Dropout(0.5))
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
+
+    model.load_weights('ex-64-1000-400-first.h5')
 
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',

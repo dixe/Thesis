@@ -52,6 +52,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 # path to the model weights file.
 weights_path = 'vgg16_weights.h5'
 top_model_weights_path = 'bottleneck_fc_model.h5'
+fine_tuned_weights = 'fine_tuned_model.h5'
 # dimensions of our images.
 img_width, img_height = 64, 64
 
@@ -171,3 +172,5 @@ model.fit_generator(
         nb_epoch=nb_epoch,
         validation_data=validation_generator,
         nb_val_samples=nb_validation_samples)
+
+model.save_weights(fine_tuned_weights)
