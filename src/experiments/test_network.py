@@ -1,15 +1,18 @@
 import fine_tune_conv as ftc
 import sys
+from keras.preprocessing.image import ImageDataGenerator
+import static_paths as sp
 
-eval_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/validation'
 nb_eval_samples = 800
+img_width = 64
+img_height = 64
 
 def evaluate_model(model):
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
-        eval_data_dir,
+        sp.eval_data_dir,
         target_size=(img_height, img_width),
         batch_size=32,
         class_mode='binary')
