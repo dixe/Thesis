@@ -46,18 +46,31 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 import tensorflow as tf
 
-with tf.device('/gpu:1'):
 
-    # dimensions of our images.
-    img_width, img_height = 64, 64
+# dimensions of our images.
+img_width, img_height = 64, 64
 
-    train_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/train'
-    validation_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/validation'
-    nb_train_samples = 2000
-    nb_validation_samples = 800
-    nb_epoch = 1
+train_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/train'
+validation_data_dir = '/home/ltm741/thesis/datasets/data-64-1000-400/validation'
+nb_train_samples = 2000
+nb_validation_samples = 800
+nb_epoch = 1
 
 
+def get_model_test():
+    model = get_model()
+
+    model.compile(loss='binary_crossentropy',
+                  optimizer='rmsprop',
+                  metrics=['accuracy','recall','precision'])
+
+   
+
+    model.load_weights('ex-64-1000-400-first.h5')
+
+    return model
+
+def get_model():
 
     model = Sequential()
     model.add(Convolution2D(32, 3, 3, input_shape=(3, img_width, img_height)))
@@ -81,9 +94,12 @@ with tf.device('/gpu:1'):
 
     model.load_weights('ex-64-1000-400-first.h5')
 
+    
+    return model
+def train_model(model):
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',
-                  metrics=['accuracy'])
+                  metrics=['accuracy','recall','precision'])
 
     # this is the augmentation configuration we will use for training
     train_datagen = ImageDataGenerator(
@@ -95,7 +111,7 @@ with tf.device('/gpu:1'):
     # this is the augmentation configuration we will use for testing:
     # only rescaling
     test_datagen = ImageDataGenerator(rescale=1./255)
-
+    
     train_generator = train_datagen.flow_from_directory(
         train_data_dir,
         target_size=(img_width, img_height),

@@ -66,6 +66,11 @@ nb_epoch = 50
 def get_model_test():
     model = get_model()
 
+    model.compile(loss='binary_crossentropy',
+                  optimizer='rmsprop',
+                  metrics=['accuracy','recall','precision'])
+
+   
     model.load_weights(fine_tuned_weights)
 
     return model
@@ -147,16 +152,17 @@ def get_model():
     for layer in model.layers[:25]:
         layer.trainable = False
 
-    # compile the model with a SGD/momentum optimizer
-    # and a very slow learning rate.
-    model.compile(loss='binary_crossentropy',
-                  optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
-                  metrics=['accuracy'])
-
     return model
 
 
 def train_model(model):
+
+    # compile the model with a SGD/momentum optimizer
+    # and a very slow learning rate.
+    model.compile(loss='binary_crossentropy',
+                  optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
+                  metrics=['accuracy',])
+
     # prepare data augmentation configuration
     train_datagen = ImageDataGenerator(
         rescale=1./255,
