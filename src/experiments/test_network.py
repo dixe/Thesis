@@ -7,7 +7,17 @@ nb_eval_samples = 800
 img_width = 64
 img_height = 64
 
-def evaluate_model(model):
+
+def visualize_model(model):
+    from keras.utils.visualize_util import plot
+
+    plot(model, to_file= sys.argv[2]+'.png')
+    exit()
+
+def evaluate_model(model, vis):
+    if vis:
+        visualize_model(model)
+
     from keras.preprocessing.image import ImageDataGenerator
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -27,16 +37,24 @@ def evaluate_model(model):
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print "ftc, fsm"
+        print "ftc25, ftc18, fsm"
         exit()
 
-    if "ftc" in sys.argv: # fine_tune_conv.py
-        import fine_tune_conv as ftc
+    vis = 'vis' in sys.argv
+
+
+    if "ftc25" in sys.argv: # fine_tune_conv_25.py
+        import fine_tune_conv_25 as ftc
 
         model = ftc.get_model_test()
-        evaluate_model(model)
+        evaluate_model(model, vis)
+    elif "ftc18" in sys.argv: # fine_tune_conv_18.py
+        import fine_tune_conv_18 as ftc
+
+        model = ftc.get_model_test()
+        evaluate_model(model, vis)
     elif 'fsm' in sys.argv: # ex-64-1000-400.py
         import ex_64_1000_400 as fsm
 
         model = fsm.get_model_test()
-        evaluate_model(model)
+        evaluate_model(model, vis)
