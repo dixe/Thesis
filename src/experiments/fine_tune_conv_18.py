@@ -156,7 +156,15 @@ class fine_tune_conv_18(Base_network):
         self.save_model_weight(model)
 
 
-if __name__ == "__main__":
+def train():
     settings = default_settings()
     net = fine_tune_conv_18(settings)
     net.fine_tune_and_save()
+
+def get_model_test():
+    settings = default_settings()
+    net = fine_tune_conv_18(settings)
+    return net.get_model_test()
+
+if __name__ == "__main__":
+    train()
