@@ -28,7 +28,7 @@ class fine_tune_conv_18(Base_network):
         Base_network.__init__(self,settings)
 
 
-    def get_model_test():
+    def get_model_test(self):
         model = get_model()
 
         model.compile(loss='binary_crossentropy',
@@ -42,10 +42,10 @@ class fine_tune_conv_18(Base_network):
         return model
 
 
-    def get_model():
+    def get_model(self):
         # build the VGG16 network
         model = Sequential()
-        model.add(ZeroPadding2D((1, 1), input_shape=(3, img_width, img_height)))
+        model.add(ZeroPadding2D((1, 1), input_shape=(3, self.settings.img_width, self.settings.img_height)))
 
         model.add(Convolution2D(64, 3, 3, activation='relu', name='conv1_1'))
         model.add(ZeroPadding2D((1, 1)))
@@ -97,7 +97,7 @@ class fine_tune_conv_18(Base_network):
         # add the model on top of the convolutional base
         model.add(top_model)
         # load weights for finetuned model 25
-        assert os.path.exists(weights_path), 'Model weights not found (see "weights_path" variable in script).'
+        assert os.path.exists(self.settings.load_weights_path), 'Model weights not found (see "weights_path" variable in script).'
 
         model.load_weights(self.settings.load_weights_path)
         print 'Model loaded.'
@@ -111,7 +111,7 @@ class fine_tune_conv_18(Base_network):
         return model
 
 
-    def train_model(model):
+    def train_model(self, model):
 
         # compile the model with a SGD/momentum optimizer
         # and a very slow learning rate.
@@ -129,13 +129,13 @@ class fine_tune_conv_18(Base_network):
         test_datagen = ImageDataGenerator(rescale=1./255)
 
         train_generator = train_datagen.flow_from_directory(
-            train_data_dir,
+            self.settings.train_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
 
         validation_generator = test_datagen.flow_from_directory(
-            validation_data_dir,
+            self.settings.validation_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
@@ -150,9 +150,9 @@ class fine_tune_conv_18(Base_network):
 
         return model
 
-    def fine_tune_and_save():
+    def fine_tune_and_save(self):
         model = self.get_model()
-        model = train_model(model)
+        model = self.train_model(model)
         self.save_model_weight(model)
 
 
