@@ -3,11 +3,6 @@ import run_settings as rs
 
 
 
-nb_eval_samples = 800
-img_width = 64
-img_height = 64
-
-
 def visualize_model(model):
     from keras.utils.visualize_util import plot
 
@@ -23,13 +18,13 @@ def evaluate_model(model, vis):
 
     eval_generator = eval_datagen.flow_from_directory(
         rs.eval_data_dir,
-        target_size=(img_height, img_width),
+        target_size=(rs.img_height, rs.img_width),
         batch_size=32,
         class_mode='binary')
 
     res = model.evaluate_generator(
         eval_generator,
-        val_samples=nb_eval_samples)
+        val_samples=rs.nb_eval_samples)
 
     print res
 

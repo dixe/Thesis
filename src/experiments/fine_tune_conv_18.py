@@ -111,50 +111,6 @@ class fine_tune_conv_18(Base_network):
         return model
 
 
-    def train_model(self, model):
-
-        # compile the model with a SGD/momentum optimizer
-        # and a very slow learning rate.
-        model.compile(loss='binary_crossentropy',
-                      optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
-                      metrics=['accuracy',])
-
-        # prepare data augmentation configuration
-        train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True)
-
-        test_datagen = ImageDataGenerator(rescale=1./255)
-
-        train_generator = train_datagen.flow_from_directory(
-            self.settings.train_data_dir,
-            target_size=(self.settings.img_height, self.settings.img_width),
-            batch_size=32,
-            class_mode='binary')
-
-        validation_generator = test_datagen.flow_from_directory(
-            self.settings.validation_data_dir,
-            target_size=(self.settings.img_height, self.settings.img_width),
-            batch_size=32,
-            class_mode='binary')
-
-        # fine-tune the model
-        model.fit_generator(
-            train_generator,
-            samples_per_epoch=self.settings.nb_train_samples,
-            nb_epoch=self.settings.nb_epoch,
-            validation_data=validation_generator,
-            nb_val_samples=self.settings.nb_validation_samples)
-
-        return model
-
-    def fine_tune_and_save(self):
-        model = self.get_model()
-        model = self.train_model(model)
-        self.save_model_weight(model)
-
 
 def train():
     settings = default_settings()
