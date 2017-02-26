@@ -29,7 +29,7 @@ class fine_tune_conv_18(Base_network):
 
 
     def get_model_test(self):
-        model = get_model()
+        model = self.get_model()
 
         model.compile(loss='binary_crossentropy',
                       optimizer='rmsprop',
