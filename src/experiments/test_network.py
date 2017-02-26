@@ -1,5 +1,5 @@
 import sys
-import static_paths as sp
+import run_settings as rs
 
 
 
@@ -22,7 +22,7 @@ def evaluate_model(model, vis):
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
-        sp.eval_data_dir,
+        rs.eval_data_dir,
         target_size=(img_height, img_width),
         batch_size=32,
         class_mode='binary')
