@@ -17,27 +17,7 @@ In our setup, we:
 So that we have 1000 training examples for each class, and 400 validation examples for each class.
 
 In summary, this is our directory structure:
-```
-data/
-    train/
-        dogs/
-            dog001.jpg
-            dog002.jpg
-            ...
-        cats/
-            cat001.jpg
-            cat002.jpg
-            ...
-    validation/
-        dogs/
-            dog001.jpg
-            dog002.jpg
-            ...
-        cats/
-            cat001.jpg
-            cat002.jpg
-            ...
-```
+
 '''
 
 import os
@@ -52,7 +32,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 # path to the model weights file.
 weights_path = 'vgg16_weights.h5'
 top_model_weights_path = 'bottleneck_fc_model.h5'
-fine_tuned_weights = 'fine_tuned_model.h5'
+fine_tuned_weights = 'fine_tuned_model_25.h5'
 # dimensions of our images.
 img_width, img_height = 64, 64
 
@@ -70,7 +50,7 @@ def get_model_test():
                   optimizer='rmsprop',
                   metrics=['accuracy','recall','precision'])
 
-   
+
     model.load_weights(fine_tuned_weights)
 
     return model
