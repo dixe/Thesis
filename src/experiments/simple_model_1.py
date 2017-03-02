@@ -6,7 +6,7 @@ It uses data that can be downloaded at:
 https://www.kaggle.com/c/dogs-vs-cats/data
 
 In our setup, we:
-- created a data/ folder
+5B5B- created a data/ folder
 - created train/ and validation/ subfolders inside data/
 - created cats/ and dogs/ subfolders inside train/ and validation/
 - put the cat pictures index 0-999 in data/train/cats
@@ -48,15 +48,15 @@ class simple_model(Base_network):
     def get_model(self):
 
         model = Sequential()
-        model.add(Convolution2D(32, 3, 3, input_shape=(3, self.settings.img_width, self.settings.img_height)))
+        model.add(Convolution2D(16, 3, 3, input_shape=(3, self.settings.img_width, self.settings.img_height)))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Convolution2D(16, 3, 3))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Convolution2D(32, 3, 3))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-
-        model.add(Convolution2D(64, 3, 3))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
@@ -69,6 +69,15 @@ class simple_model(Base_network):
 
         model.load_weights(self.settings.save_weights_path)
 
+        return model
+
+    def get_model_train(self):
+        model = self.get_model()
+        # compile the model with a SGD/momentum optimizer
+        # and a very slow learning rate.
+        model.compile(loss='binary_crossentropy',
+                      optimizer='rmsprop',
+                      metrics=['accuracy'])
         return model
 
 def train():

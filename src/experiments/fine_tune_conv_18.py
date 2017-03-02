@@ -40,6 +40,16 @@ class fine_tune_conv_18(Base_network):
         model.load_weights(self.settings.save_weights_path)
 
         return model
+        
+    def get_model_train(self):
+        
+        model = self.get_model()
+
+        model.compile(loss='binary_crossentropy',
+                      optimizer=optimizers.SGD(lr=1e-4,momentum=0.9),
+                      metrics=['accuracy'])
+
+        return model        
 
 
     def get_model(self):

@@ -17,14 +17,14 @@ def evaluate_model(model, vis):
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
-        rs.eval_data_dir,
+        rs.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
         batch_size=32,
         class_mode='binary')
 
     res = model.evaluate_generator(
         eval_generator,
-        val_samples=rs.nb_eval_samples)
+        val_samples=rs.nb_validation_samples)
 
     print res
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         model = ftc.get_model_test()
         evaluate_model(model, vis)
     elif 'fsm' in sys.argv: # ex-64-1000-400.py
-        import ex_64_1000_400 as fsm
+        import simple_model as fsm
 
         model = fsm.get_model_test()
         evaluate_model(model, vis)
