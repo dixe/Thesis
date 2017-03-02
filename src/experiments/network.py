@@ -38,7 +38,7 @@ class Base_network(object):
         model.save_weights(self.settings.save_weights_path)
         # maybe add a result file
 
-    
+
 
     def get_session(self, gpu_fraction=0.1):
         """
@@ -90,6 +90,9 @@ class Base_network(object):
         model,history = self.train_model(model)
         self.save_model_weight(model)
 
+
+    def model_name(self):
+        raise NotImplementedError
 
 
 def default_settings():

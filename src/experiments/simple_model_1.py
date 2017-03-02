@@ -27,7 +27,7 @@ from network import Net_settings, Base_network, default_settings
 
 
 class simple_model(Base_network):
-   
+
     def __init__(self,settings):
 
         Base_network.__init__(self,settings)
@@ -41,7 +41,7 @@ class simple_model(Base_network):
                       metrics=['accuracy','recall','precision'])
 
 
-        model.load_weights(self.settings.save_weights_path)
+        model.load_weights(self.get_test_weights_path())
 
         return model
 
@@ -79,6 +79,12 @@ class simple_model(Base_network):
                       optimizer='rmsprop',
                       metrics=['accuracy'])
         return model
+
+    def get_save_weights_path(self):
+        return self.settigns.save_weights_path.format(self.model_name)
+
+    def model_name(self):
+        return "simple_model_1"
 
 def train():
     settings = default_settings()
