@@ -32,7 +32,7 @@ def evaluate_model(model, vis):
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print "ftc25, ftc18, fsm"
+        print "ftc25, ftc18, fsm0, fsm1, fsm2, fsm3"
         exit()
 
     vis = 'vis' in sys.argv
@@ -48,8 +48,25 @@ if __name__ == "__main__":
 
         model = ftc.get_model_test()
         evaluate_model(model, vis)
-    elif 'fsm' in sys.argv: # ex-64-1000-400.py
+    elif 'fsm0' in sys.argv: # simple_model.py
         import simple_model as fsm
+
+        model = fsm.get_model_test()
+        evaluate_model(model, vis)
+
+    elif 'fsm1' in sys.argv: # simple_model_1.py
+        import simple_model_1 as fsm
+
+        model = fsm.get_model_test()
+        evaluate_model(model, vis)
+    elif 'fsm2' in sys.argv: # simple_model_2.py
+        import simple_model_2 as fsm
+
+        model = fsm.get_model_test()
+        evaluate_model(model, vis)
+
+    elif 'fsm3' in sys.argv: # simple_model_3.py
+        import simple_model_3 as fsm
 
         model = fsm.get_model_test()
         evaluate_model(model, vis)
