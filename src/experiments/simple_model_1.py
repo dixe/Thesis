@@ -41,7 +41,7 @@ class simple_model(Base_network):
                       metrics=['accuracy','recall','precision'])
 
 
-        model.load_weights(self.get_test_weights_path())
+        model.load_weights(self.get_save_weights_path())
 
         return model
 
@@ -67,7 +67,7 @@ class simple_model(Base_network):
         model.add(Dense(1))
         model.add(Activation('sigmoid'))
 
-        model.load_weights(self.settings.save_weights_path)
+        model.load_weights(self.get_save_weights_path())
 
         return model
 
@@ -81,7 +81,7 @@ class simple_model(Base_network):
         return model
 
     def get_save_weights_path(self):
-        return self.settigns.save_weights_path.format(self.model_name)
+        return self.settings.save_weights_path.format(self.model_name())
 
     def model_name(self):
         return "simple_model_1"
