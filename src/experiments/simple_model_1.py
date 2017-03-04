@@ -67,7 +67,7 @@ class simple_model(Base_network):
         model.add(Dense(1))
         model.add(Activation('sigmoid'))
 
-        model.load_weights(self.get_save_weights_path())
+        #model.load_weights(self.get_save_weights_path())
 
         return model
 
@@ -77,7 +77,7 @@ class simple_model(Base_network):
         # and a very slow learning rate.
         model.compile(loss='binary_crossentropy',
                       optimizer='rmsprop',
-                      metrics=['accuracy'])
+                      metrics=['hinge'])
         return model
 
     def get_save_weights_path(self):
