@@ -10,7 +10,7 @@ check if sorts are different in the given data
 can we split into different sorts, that might improve results
 
 
-might prove that they have some importent 
+might prove that they have some importent
 
 
 learn structure in images using autoencoders
@@ -31,13 +31,13 @@ is colors important, or just use grayscale
 check average size of the broken circles, to find a fixed size
 
 
-statistics on the size, histogram ect.
+statistics on the size, histogram ect. - done
 
 
-make sure keras can use pretraining of models
+make sure keras can use pretraining of models - done
 
 
-how to pretrain, get imagenet
+how to pretrain, get imagenet - done
 
 
 lituerre review
@@ -46,10 +46,32 @@ What has other people done when we have few training examples, pretraining data 
 
 
 to start
-windows within region of interrest
+windows within region of interrest - done
 
 
-data arugmentation by shifting in different
+data arugmentation by shifting in different - done
 
 
 make test set later
+
+---
+
+try fewer layers and filters
+
+
+hard negative example training
+
+
+jet filter learning
+
+
+NIN, train og parameters, topo and all the tricks
+
+
+ensable learning
+
+
+initializing tricks
+
+
+lenet 5
