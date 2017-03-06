@@ -47,7 +47,7 @@ def evaluate_model_and_report(model):
     file_names = eval_generator.filenames
 
     print len(file_names) == len(res)
-    
+
     res_dict = {}
 
     for i in range(len(file_names)):

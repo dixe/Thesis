@@ -8,6 +8,22 @@ import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 
 
+class Net_settings(object):
+
+
+    def __init__(self, save_weights_path, load_weights_path,img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch):
+        # path to the model weights file.
+        self.save_weights_path = save_weights_path
+        self.load_weights_path = load_weights_path
+        # dimensions of our images.
+        self.img_width, self.img_height = img_width, img_height
+
+        self.train_data_dir = train_data_dir
+        self.validation_data_dir = validation_data_dir
+        self.nb_train_samples = nb_train_samples
+        self.nb_validation_samples = nb_validation_samples
+        self.nb_epoch = nb_epoch
+
 
 class Base_network(object):
     """
