@@ -75,3 +75,28 @@ initializing tricks
 
 
 lenet 5
+
+
+
+What has other people done when we have few training examples, pretraining data arugmentation ect -
+
+
+try with grayscale -
+
+
+figure out optimizers and weight initalizations
+
+
+hard negative training DO IT
+
+
+ensamble learning
+
+
+hyper parameter patch size
+
+
+Auto encoders DTU ref 30
+
+
+Check lightning difference between images
