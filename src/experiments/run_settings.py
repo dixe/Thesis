@@ -3,19 +3,15 @@ import uuid
 dataset_name = 'data-64-1000-400'
 
 
-train_data_dir = "/home/ltm741/thesis/datasets/{0}/train/".format(dataset_name)
+train_data_dir = "/home/nikolaj/Thesis/datasets/{0}/train/".format(dataset_name)
 
-validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
+validation_data_dir = "/home/nikolaj/Thesis/datasets/{0}/validation".format(dataset_name)
 
-eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
-
-
-save_weights_path = "64_1000_400/{0}_hinge.h5"
-
-load_weights_path = "64_1000_400/{0}_hinge.h5"
+eval_data_dir = "/home/nikolaj/Thesis/datasets/{0}/validation".format(dataset_name)
 
 
-save_folder = "weights"
+weights_folder = "weights/"
+settings_folder = "settings/"
 
 img_width = 64
 img_height = img_width
@@ -24,16 +20,16 @@ nb_validation_samples = 800
 
 nb_train_samples = 2000
 
-nb_epoch = 50
+nb_epoch = 1
 
 
 
 class Net_settings(object):
 
 
-    def __init__(self, save_weights_path, load_weights_path,img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None):
+    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None):
         # path to the model weights file.
-        self.load_weights_path = load_weights_path
+        self.load_weights_path = ""
         # dimensions of our images.
         self.img_width, self.img_height = img_width, img_height
 
@@ -46,7 +42,7 @@ class Net_settings(object):
             # create a uuid for this setting
             guid = uuid.uuid4()
         self.guid = guid
-        self.save_weights_path = "{0}/{1}.h5".format(save_folder, self.guid)
+        self.save_weights_path = "{0}/{1}.h5".format(weights_folder, self.guid)
 
 
     def get_dict(self):

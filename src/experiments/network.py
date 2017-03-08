@@ -1,4 +1,5 @@
 import run_settings as rs
+import Weightstore as ws
 from keras import optimizers
 from keras.models import Sequential
 from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
@@ -6,7 +7,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
-
+import os
 
 
 class Base_network(object):
@@ -20,7 +21,11 @@ class Base_network(object):
 
     def save_model_weight(self, model):
         model.save_weights(self.settings.save_weights_path)
-        # maybe add a result file
+
+        ws.store_settings(self.settings)
+
+        # Add to overview file/table
+        print "saved to {0}".format(self.settings.save_weights_path)
 
 
 
@@ -79,10 +84,11 @@ class Base_network(object):
         raise NotImplementedError
 
 
+    def has_weights(self):
+        return os.path.isfile(self.settings.save_weights_path)
+
 def default_settings():
-    return Net_settings(rs.save_weights_path,
-                        rs.load_weights_path,
-                        rs.img_width,
+    return rs.Net_settings(rs.img_width,
                         rs.img_height,
                         rs.train_data_dir,
                         rs.validation_data_dir,

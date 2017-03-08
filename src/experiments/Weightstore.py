@@ -28,26 +28,23 @@ def load_settings(guid_substring):
             set_dict = json.load(fp)
 
 
-        settings.append(rs.Net_settings( set_dict["save_weights_path"],
-                                 set_dict["load_weights_path"],
-                                 set_dict["img_width"],
-                                 set_dict["img_height"],
-                                 set_dict["train_data_dir"],
-                                 set_dict["validation_data_dir"],
-                                 set_dict["nb_train_samples"],
-                                 set_dict["nb_validation_samples"],
-                                 set_dict["nb_epoch"],
-                                 uuid.UUID(s[0])))
+
+        settings.append(rs.Net_settings( set_dict["img_width"],
+                                         set_dict["img_height"],
+                                         set_dict["train_data_dir"],
+                                         set_dict["validation_data_dir"],
+                                         set_dict["nb_train_samples"],
+                                         set_dict["nb_validation_samples"],
+                                         set_dict["nb_epoch"],
+                                         uuid.UUID(s[0])))
 
     return settings
-
-
 
 def store_settings(settings):
     if settings.guid == None:
         settings.guid = uuid.uuid4()
 
-    name = rs.save_folder + str(settings.guid) + ".nns"
+    name = rs.settings_folder + str(settings.guid) + ".nns"
     with open(name, 'w+') as fp:
         json.dump(settings.get_dict(),fp)
 
@@ -56,15 +53,30 @@ def store_settings(settings):
     c = conn.cursor()
 
     vals = (str(settings.guid), name)
-    print vals
-    c.execute("INSERT INTO settings VALUES(?,?)", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?)", vals)
     conn.commit()
     return settings
+
+
+def get_settings(guid_substring):
+    settings = load_settings(guid_substring)
+    num_settings = len(settings)
+    if num_settings != 1:
+        if num_settings == 0:
+            print "No settings found: {0}".format(guid_substring)
+            return None
+
+        print "Multiple settings found"
+        for s in settings:
+            print s.guid
+        return None
+    return settings[0]
+
 
 if __name__ == "__main__":
     #settings = rs.default_settings()
     #settings = store_settings(settings)
 
-    settings = load_settings("cfebe88")
+    settings = load_settings("f8463")
 
     print len(settings)
