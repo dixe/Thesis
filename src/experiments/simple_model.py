@@ -94,12 +94,16 @@ def train():
 
 def get_model_test(guid_substring):
     settings = ws.load_settings(guid_substring)
-    if len(settings) != 1:
+    num_settings = len(settings)
+    if len(num_settings) != 1:
+        if num_settings == 0:
+            print "No settings found: {0}".format(guid_substring)
+            exit()
+
         print "Multiple settings found"
         for s in settings:
             print s.guid
         exit()
-
 
     net = simple_model(settings)
     return net.get_model_test()

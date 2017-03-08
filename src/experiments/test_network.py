@@ -1,7 +1,7 @@
 import sys
 import run_settings as rs
 import json
-
+import Weightstore as ws
 
 def visualize_model(model):
     from keras.utils.visualize_util import plot
@@ -77,6 +77,7 @@ if __name__ == "__main__":
         print "ftc25, ftc18, fsm0, fsm1, fsm2, fsm3"
         exit()
 
+
     if 'vis' in sys.argv:
         callback = visualize_model
 
@@ -84,35 +85,39 @@ if __name__ == "__main__":
         callback = evaluate_model_and_report
 
 
+    guid_substring = sys.argv[-1]
+
+    settings = ws.load_settigns(guid_substring)
+
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
 
-        model = ftc.get_model_test()
+        model = ftc.get_model_test(settings)
         callback(model)
     elif "ftc18" in sys.argv: # fine_tune_conv_18.py
         import fine_tune_conv_18 as ftc
 
-        model = ftc.get_model_test()
+        model = ftc.get_model_test(settings)
         callback(model)
     elif 'fsm0' in sys.argv: # simple_model.py
         import simple_model as fsm
 
-        model = fsm.get_model_test()
+        model = fsm.get_model_test(settings)
         callback(model)
 
     elif 'fsm1' in sys.argv: # simple_model_1.py
         import simple_model_1 as fsm
 
-        model = fsm.get_model_test()
+        model = fsm.get_model_test(settings)
         callback(model)
     elif 'fsm2' in sys.argv: # simple_model_2.py
         import simple_model_2 as fsm
 
-        model = fsm.get_model_test()
+        model = fsm.get_model_test(settings)
         callback(model)
 
     elif 'fsm3' in sys.argv: # simple_model_3.py
         import simple_model_3 as fsm
 
-        model = fsm.get_model_test()
+        model = fsm.get_model_test(settings)
         callback(model)
