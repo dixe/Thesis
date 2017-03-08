@@ -2,15 +2,18 @@ import uuid
 
 dataset_name = 'data-64-1000-400'
 
-eval_data_dir = '/home/nikolaj/Thesis/datasets/{0}/validation'.format(dataset_name)
 
-train_data_dir = "/home/nikolaj/Thesis/datasets/{0}/train/".format(dataset_name)
+train_data_dir = "/home/ltm741/thesis/datasets/{0}/train/".format(dataset_name)
 
-validation_data_dir = "/home/nikolaj/Thesis/datasets/{0}/validation/".format(dataset_name)
+validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
-save_weights_path = "fine_tuned_model_18.h5"
+eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
-load_weights_path = "fine_tuned_model.h5"
+
+save_weights_path = "64_1000_400/{0}_hinge.h5"
+
+load_weights_path = "64_1000_400/{0}_hinge.h5"
+
 
 save_folder = "weights"
 
@@ -21,9 +24,7 @@ nb_validation_samples = 800
 
 nb_train_samples = 2000
 
-nb_epoch = 1
-
-
+nb_epoch = 50
 
 
 
