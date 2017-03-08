@@ -24,7 +24,7 @@ from keras.models import Sequential
 from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from network import Net_settings, Base_network, default_settings
-
+import Weightstore as ws
 
 class simple_model(Base_network):
 
@@ -92,10 +92,18 @@ def train():
     net = simple_model(settings)
     net.fine_tune_and_save()
 
-def get_model_test():
-    settings = default_settings()
+def get_model_test(guid_substring):
+    settings = ws.load_settings(guid_substring)
+    if len(settings) != 1:
+        print "Multiple settings found"
+        for s in settings:
+            print s.guid
+        exit()
+
+
     net = simple_model(settings)
     return net.get_model_test()
+
 
 if __name__ == "__main__":
     train()
