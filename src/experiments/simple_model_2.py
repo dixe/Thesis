@@ -67,7 +67,11 @@ class simple_model(Base_network):
         model.add(Dense(1))
         model.add(Activation('sigmoid'))
 
-        model.load_weights(self.settings.save_weights_path)
+
+        print  self.has_weights()
+        if self.has_weights():
+            model.load_weights(self.settings.save_weights_path)
+            print "loaded_model"
 
         return model
 
@@ -80,26 +84,22 @@ class simple_model(Base_network):
                       metrics=['accuracy'])
         return model
 
-def train():
-    settings = default_settings()
+def train(guid_substring = None):
+    settings = ws.get_settings(guid_substring)
+    if settings == None:
+        settings = default_settings()
+
     net = simple_model(settings)
     net.fine_tune_and_save()
 
 def get_model_test(guid_substring):
-    settings = ws.load_settings(guid_substring)
-    num_settings = len(settings)
-    if len(num_settings) != 1:
-        if num_settings == 0:
-            print "No settings found: {0}".format(guid_substring)
-            exit()
-
-        print "Multiple settings found"
-        for s in settings:
-            print s.guid
+    settings = ws.get_settings(guid_substring)
+    if settings == None:
         exit()
-
     net = simple_model(settings)
     return net.get_model_test()
 
+
 if __name__ == "__main__":
-    train()
+    guid_substring = sys.argv[-1]
+    train(guid_substring)
