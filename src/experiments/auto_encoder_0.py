@@ -94,6 +94,7 @@ class auto_encoder(Base_network):
 
 
 
+        return model, None
     def get_model_train(self):
         model = self.get_model()
         # compile the model with a SGD/momentum optimizer
