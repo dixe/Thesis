@@ -22,7 +22,7 @@ class simple_model(Base_network):
                       metrics=['accuracy','recall','precision'])
 
 
-        model.load_weights(self.get_save_weights_path())
+        model.load_weights(self.settings.get_save_weights_path)
 
         return model
 
@@ -80,10 +80,7 @@ def train(guid_substring = None):
     net = simple_model(settings)
     net.fine_tune_and_save()
 
-def get_model_test(guid_substring):
-    settings = ws.get_settings(guid_substring)
-    if settings == None:
-        exit()
+def get_model_test(settings):
     net = simple_model(settings)
     return net.get_model_test()
 

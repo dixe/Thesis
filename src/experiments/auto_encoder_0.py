@@ -24,7 +24,7 @@ class auto_encoder(Base_network):
                       metrics=['accuracy','recall','precision'])
 
 
-        model.load_weights(self.get_save_weights_path())
+        model.load_weights(self.settings.save_weights_path)
 
         return model
 
@@ -87,7 +87,7 @@ class auto_encoder(Base_network):
 
         imgs = train_generator.next()
         x_train = np.array(imgs[0])
-        print x_train.shape
+
         model.fit(x_train,
                   x_train,
                   nb_epoch=self.settings.nb_epoch)
@@ -95,6 +95,8 @@ class auto_encoder(Base_network):
 
 
         return model, None
+
+
     def get_model_train(self):
         model = self.get_model()
         # compile the model with a SGD/momentum optimizer
@@ -116,13 +118,9 @@ def train(guid_substring = None):
     net = auto_encoder(settings)
     net.fine_tune_and_save()
 
-def get_model_test(guid_substring):
-    settings = ws.get_settings(guid_substring)
-    if settings == None:
-        exit()
+def get_model_test(settings):
     net = auto_encoder(settings)
     return net.get_model_test()
-
 
 if __name__ == "__main__":
     guid_substring = sys.argv[-1]

@@ -2,12 +2,33 @@ import sys
 import run_settings as rs
 import json
 import Weightstore as ws
+import numpy as np
+
 
 def visualize_model(model):
     from keras.utils.visualize_util import plot
 
     plot(model, to_file= sys.argv[2]+'.png')
 
+
+def evaluate_model_ae(model):
+    print "eval"
+    from keras.preprocessing.image import ImageDataGenerator
+
+    eval_datagen = ImageDataGenerator(rescale=1./255)
+
+    eval_generator = eval_datagen.flow_from_directory(
+        rs.validation_data_dir,
+        target_size=(rs.img_height, rs.img_width),
+        batch_size=rs.nb_validation_samples,
+        class_mode='binary')
+
+    imgs = eval_generator.next()
+    x_eval = np.array(imgs[0])
+
+    res = model.evaluate(x_eval, x_eval)
+    print res
+    return res
 
 def evaluate_model(model):
     print "eval"
@@ -70,8 +91,6 @@ def correct(name, pred):
 if __name__ == "__main__":
 
 
-
-
     callback = evaluate_model
     if len(sys.argv) == 1:
         print "ftc25, ftc18, fsm0, fsm1, fsm2, fsm3 ae"
@@ -87,7 +106,7 @@ if __name__ == "__main__":
 
     guid_substring = sys.argv[-1]
 
-    settings = ws.load_settings(guid_substring)
+    settings = ws.get_settings(guid_substring)
 
 
 
@@ -125,6 +144,6 @@ if __name__ == "__main__":
         callback(model)
     elif 'ae' in sys.argv: # auto_encoder_0.py
         import auto_encoder_0 as ae
-
+        callback = evaluate_model_ae
         model = ae.get_model_test(settings)
         callback(model)
