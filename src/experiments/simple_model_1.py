@@ -1,9 +1,11 @@
-
+import sys
 from keras import optimizers
 from keras.models import Sequential
 from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers import Activation, Dropout, Flatten, Dense
-from network import Net_settings, Base_network, default_settings
+from network import Base_network, default_settings
+from run_settings import Net_settings
+import Weightstore as ws
 
 
 class simple_model(Base_network):
