@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     guid_substring = sys.argv[-1]
 
-    settings = ws.load_settigns(guid_substring)
+    settings = ws.load_settings(guid_substring)
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
@@ -120,4 +120,9 @@ if __name__ == "__main__":
         import simple_model_3 as fsm
 
         model = fsm.get_model_test(settings)
+        callback(model)
+    elif 'fsm3' in sys.argv: # auto_encoder_0.py
+        import auto_encoder_0 as ae
+
+        model = ae.get_model_test(settings)
         callback(model)
