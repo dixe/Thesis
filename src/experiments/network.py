@@ -76,7 +76,7 @@ class Base_network(object):
     def fine_tune_and_save(self):
         KTF.set_session(self.get_session())
         model = self.get_model_train()
-        model,history = self.train_model(model)
+        model, history = self.train_model(model)
         self.save_model_weight(model)
 
 

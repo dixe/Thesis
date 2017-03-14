@@ -125,7 +125,6 @@ if __name__ == "__main__":
         callback(model)
     elif 'ae' in sys.argv: # auto_encoder_0.py
         import auto_encoder_0 as ae
-        print 'ae'
 
         model = ae.get_model_test(settings)
         callback(model)

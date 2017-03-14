@@ -16,7 +16,7 @@ def load_settings(guid_substring):
 
     c = conn.cursor()
 
-    t = ('%' +guid_substring + '%',)
+    t = ("%{0}%".format(guid_substring),)
 
     c.execute('SELECT * FROM settings WHERE uuid  like ?',t)
     uuid_settings = c.fetchall()
