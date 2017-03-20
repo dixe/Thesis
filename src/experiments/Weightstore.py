@@ -2,6 +2,7 @@ import run_settings as rs
 import json
 import uuid
 import sqlite3
+import sys
 
 DBNAME = "weightdb.db"
 
@@ -87,13 +88,17 @@ def get_settings_model_name(model_name):
     for settings in uuid_settings:
         print "{0}, {1}".format(settings[2], settings[0])
 
-    return uuid.settigns
+    return uuid_settings
 
-
-if __name__ == "__main__":
-    #settings = rs.default_settings()
-    #settings = store_settings(settings)
+def test():
 
     settings = load_settings("f8463")
 
     print len(settings)
+
+
+if __name__ == "__main__":
+
+    model_name = sys.argv[-1]
+
+    get_settings_model_name(model_name)
