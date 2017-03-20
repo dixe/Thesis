@@ -7,7 +7,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
-import os
+import os, sys
 
 
 class Base_network(object):
@@ -97,3 +97,10 @@ def default_settings():
                         rs.nb_train_samples,
                         rs.nb_validation_samples,
                         rs.nb_epoch)
+
+
+if __name__ == "__main__":
+    model_name = sys.argv[-1]
+
+
+    ws.get_settings_model_name(model_name)

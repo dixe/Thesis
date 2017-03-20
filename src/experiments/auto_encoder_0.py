@@ -105,7 +105,7 @@ class auto_encoder(Base_network):
         return model
 
     def model_name(self):
-        return "auto_encoder"
+        return "auto_encoder_0"
 
 
 

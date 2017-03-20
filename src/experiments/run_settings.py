@@ -66,9 +66,7 @@ class Net_settings(object):
 
 
 def default_settings():
-    return Net_settings(save_weights_path,
-                        load_weights_path,
-                        img_width,
+    return Net_settings(img_width,
                         img_height,
                         train_data_dir,
                         validation_data_dir,

@@ -75,6 +75,21 @@ def get_settings(guid_substring):
     return settings[0]
 
 
+def get_settings_model_name(model_name):
+    conn = get_db_conn()
+    c = conn.cursor()
+
+    t = ("%{0}%".format(model_name),)
+
+    c.execute('SELECT * FROM settings WHERE model_name like ?',t)
+    uuid_settings = c.fetchall()
+
+    for settings in uuid_settings:
+        print "{0}, {1}".format(settings[2], settings[0])
+
+    return uuid.settigns
+
+
 if __name__ == "__main__":
     #settings = rs.default_settings()
     #settings = store_settings(settings)
