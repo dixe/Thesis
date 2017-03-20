@@ -18,6 +18,8 @@ class Base_network(object):
 
     def __init__(self, net_settings):
         self.settings = net_settings
+        self.settings.model_name = self.model_name()
+
 
     def save_model_weight(self, model):
         model.save_weights(self.settings.save_weights_path)

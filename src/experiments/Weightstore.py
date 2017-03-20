@@ -36,7 +36,8 @@ def load_settings(guid_substring):
                                          set_dict["nb_train_samples"],
                                          set_dict["nb_validation_samples"],
                                          set_dict["nb_epoch"],
-                                         uuid.UUID(s[0])))
+                                         uuid.UUID(s[0]),
+                                         set_dict.get("model_name","")))
 
     return settings
 
@@ -52,8 +53,9 @@ def store_settings(settings):
 
     c = conn.cursor()
 
-    vals = (str(settings.guid), name)
-    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?)", vals)
+    vals = (str(settings.guid), name, settings.model_name)
+
+    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?,?)", vals)
     conn.commit()
     return settings
 

@@ -99,8 +99,7 @@ class auto_encoder(Base_network):
 
     def get_model_train(self):
         model = self.get_model()
-        # compile the model with a SGD/momentum optimizer
-        # and a very slow learning rate.
+
         model.compile(optimizer='adadelta', loss='binary_crossentropy')
 
         return model

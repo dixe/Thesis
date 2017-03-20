@@ -27,7 +27,7 @@ nb_epoch = 1
 class Net_settings(object):
 
 
-    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None):
+    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None, model_name = ""):
         # path to the model weights file.
         self.load_weights_path = ""
         # dimensions of our images.
@@ -44,6 +44,7 @@ class Net_settings(object):
         self.guid = guid
         self.save_weights_path = "{0}/{1}.h5".format(weights_folder, self.guid)
 
+        self.model_name = model_name
 
     def get_dict(self):
         sd = {}
@@ -58,6 +59,7 @@ class Net_settings(object):
         sd["nb_train_samples"] = self.nb_train_samples
         sd["nb_validation_samples"] = self.nb_validation_samples
         sd["nb_epoch"] = self.nb_epoch
+        sd["model_name"] = self.model_name
 
         return sd
 
