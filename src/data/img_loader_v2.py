@@ -22,7 +22,7 @@ class XmlImgsLoad(object):
 
         self.XmlParser = XmlParser(self.path  +'/' + IMG_META_XML_NAME)
 
-        xmls = self.get_all_img_iter(FILE_NAME_SUBSTRING)
+
 
     def get_all_img_iter(self, imgs_name):
         """
@@ -32,14 +32,25 @@ class XmlImgsLoad(object):
 
         xml_entries = self.XmlParser.get_xml_entries(imgs_name)
 
-        print len(xml_entries)
-
         for xml_entry in xml_entries:
             file_name = xml_entry.find("properties//filename").text
-            print file_name
-            yield (cv2.imread(file_name), xml_entry)
 
-            #yield entry_img
+            yield (cv2.imread(self.path + '/' + file_name), xml_entry)
+
+
+
+    def get_img_roi(self, imgs_name):
+        for (img,xml) in self.get_all_img_iter(imgs_name):
+
+            roi = self.XmlParser.get_roi(xml)
+
+
+            roi_img = img[roi[1]:roi[3],roi[0]:roi[2],:]
+
+
+            yield roi_img,xml
+
+
 
 class XmlParser(object):
 
@@ -93,15 +104,11 @@ class XmlParser(object):
 
         return annotations
 
-    def get_roi(self):
-        if self.xml_element == None:
-            self.get_xml_entry(self.xml_root)
-        if not self.valid:
-            return 0,0,0,0
+    def get_roi(self, xml_element):
 
         xs = []
         ys = []
-        for l in self.xml_element.iter('line'):
+        for l in xml_element.iter('line'):
             x_start = int(float(l.find('start').find('X').text))
             y_start = int(float(l.find('start').find('Y').text))
 
@@ -111,7 +118,7 @@ class XmlParser(object):
             xs += [x_start, x_end]
             ys += [y_start, y_end]
 
-        return np.min(xs) + PATCH_SIZE_HALF, np.min(ys) + PATCH_SIZE_HALF, np.max(xs) - PATCH_SIZE_HALF, np.max(ys) - PATCH_SIZE_HALF
+        return np.min(xs) , np.min(ys), np.max(xs), np.max(ys)
 
 
 
@@ -155,12 +162,12 @@ def get_all_annotations(path):
 
 
 if __name__ == "__main__":
-    try:
-        path = 'E://Speciale//CLAAS//161004_C83-04 Harsewinkel (v02.06.07) Maize//Oktober 4, 2016 - 10 20 56'
 
-        xml_img_loader = XmlImgsLoad(path)
+    path = 'E://Speciale//CLAAS//161004_C83-04 Harsewinkel (v02.06.07) Maize//Oktober 4, 2016 - 10 20 56'
 
-        xml_img_loader.get_all_img_iter(FILE_NAME_SUBSTRING)
+    xml_img_loader = XmlImgsLoad(path)
 
-    except:
-        print "da"
+    roi_imgs_xml = xml_img_loader.get_img_roi(FILE_NAME_SUBSTRING)
+
+    for (img,xml) in roi_imgs_xml:
+        print xml.find("properties//filename").text
