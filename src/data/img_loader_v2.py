@@ -5,6 +5,7 @@ import json
 import utils as UT
 import random as rand
 import numpy as np
+import shutil
 
 IMG_META_XML_NAME = "Images Metadata Log.xml"
 FILE_NAME_SUBSTRING = "all_impurities"
@@ -30,10 +31,12 @@ class XmlImgsLoad(object):
         """
 
 
-        xml_entries = self.XmlParser.get_xml_entries(imgs_name)
+        xml_entries = self.XmlParser.get_xml_entries_frames(imgs_name)
 
         for xml_entry in xml_entries:
-            file_name = xml_entry.find("properties//filename").text
+
+
+            file_name = xml_entry.attrib['filename']
 
             yield (cv2.imread(self.path + '/' + file_name), xml_entry)
 
@@ -44,6 +47,10 @@ class XmlImgsLoad(object):
 
             roi = self.XmlParser.get_roi(xml)
 
+            if img == None:
+
+                print "Found None {0}, skipping".format(xml.attrib['filename'])
+                continue
 
             roi_img = img[roi[1]:roi[3],roi[0]:roi[2],:]
 
@@ -62,6 +69,20 @@ class XmlParser(object):
     def get_xml_entries(self, imgs_name):
 
         return filter(lambda x : x.attrib['name'] == FILE_NAME_SUBSTRING,  self.xml_root.findall(".//image"))
+
+
+    def get_xml_entries_frames(self, imgs_name):
+
+        frames = self.xml_root.findall("frame")
+        for frame in frames:
+            imgs = filter(lambda x : x.attrib['name'] == FILE_NAME_SUBSTRING,  frame.findall(".//image"))
+            for img in imgs:
+                frame_num = frame.attrib['number']
+                img_name = "{0}-{1}.bmp".format(frame_num.zfill(5),FILE_NAME_SUBSTRING)
+
+                img.set("filename",img_name)
+
+                yield img
 
 
     def get_xml_entry(self, root):
@@ -161,13 +182,34 @@ def get_all_annotations(path):
     return annos
 
 
+def mkdir(dir_path):
+
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
 if __name__ == "__main__":
 
-    path = 'E://Speciale//CLAAS//161004_C83-04 Harsewinkel (v02.06.07) Maize//Oktober 4, 2016 - 10 20 56'
+    path = 'E://Speciale//CLAAS//'
 
-    xml_img_loader = XmlImgsLoad(path)
+    new_root = 'CLAAS_roi_imgs'
 
-    roi_imgs_xml = xml_img_loader.get_img_roi(FILE_NAME_SUBSTRING)
 
-    for (img,xml) in roi_imgs_xml:
-        print xml.find("properties//filename").text
+    for r,ds,fs in os.walk(path):
+        if IMG_META_XML_NAME in fs: # we are in folder with a xml file
+            print r
+
+            xml_img_loader = XmlImgsLoad(r)
+
+            roi_imgs_xml = xml_img_loader.get_img_roi(FILE_NAME_SUBSTRING)
+
+            new_dir = r.replace("CLAAS",new_root)
+            print new_dir
+
+            mkdir(new_dir)
+
+            shutil.copy(r + '//' + IMG_META_XML_NAME, new_dir + '//' + IMG_META_XML_NAME)
+            for (img,xml) in roi_imgs_xml:
+                img_name = xml.attrib['filename']
+                img_path = "{0}//{1}".format(new_dir,img_name)
+                print "Save {0} to {1}".format(img_name,new_dir)
+                cv2.imwrite(img_path,img)
