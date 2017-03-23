@@ -31,9 +31,9 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.1):
+    def get_session(self, gpu_fraction=0.4):
         """
-        With 8 gb of ram, use ~1 gb
+        With 8 gb of ram, use ~4 gb
         """
 
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
