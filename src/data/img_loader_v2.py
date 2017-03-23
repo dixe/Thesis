@@ -203,13 +203,13 @@ if __name__ == "__main__":
             roi_imgs_xml = xml_img_loader.get_img_roi(FILE_NAME_SUBSTRING)
 
             new_dir = r.replace("CLAAS",new_root)
-            print new_dir
+
 
             mkdir(new_dir)
 
             shutil.copy(r + '//' + IMG_META_XML_NAME, new_dir + '//' + IMG_META_XML_NAME)
+            print new_dir
             for (img,xml) in roi_imgs_xml:
                 img_name = xml.attrib['filename']
                 img_path = "{0}//{1}".format(new_dir,img_name)
-                print "Save {0} to {1}".format(img_name,new_dir)
                 cv2.imwrite(img_path,img)
