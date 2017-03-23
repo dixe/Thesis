@@ -48,16 +48,16 @@ class auto_encoder(Base_network):
 
 
         # decoding layer
-        x = conv1(encoded)
+        x = conv3(encoded)
         x = UpSampling2D((2,2))(x)
 
         x = conv2(x)
         x = UpSampling2D((2,2))(x)
 
-        x = conv3(x)
+        x = conv1(x)
         x = UpSampling2D((2,2))(x)
 
-        decoded = Convolution2D(3,3,3,activation="sigmoid", border_mode='same')(x)
+        decoded = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')(x)
 
         model = Model(input_img, decoded)
 
