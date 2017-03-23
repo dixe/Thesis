@@ -85,7 +85,7 @@ class auto_encoder(Base_network):
             self.settings.train_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=self.settings.nb_train_samples,
-            class_mode='binary')
+            class_mode=None)
 
 
         imgs = train_generator.next()

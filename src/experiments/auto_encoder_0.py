@@ -8,6 +8,7 @@ from network import Base_network, default_settings
 from run_settings import Net_settings
 import numpy as np
 import Weightstore as ws
+import MyImgGenerator as mig
 
 class auto_encoder(Base_network):
 
@@ -31,7 +32,7 @@ class auto_encoder(Base_network):
     def get_model(self):
 
         # encoding layer
-        input_img = Input(shape=(3, self.settings.img_width, self.settings.img_height))
+        input_img = Input(shape=(3, self.settings.img_height, self.settings.img_width))
 
         x = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(input_img)
         x = MaxPooling2D((2,2), border_mode="same")(x)
@@ -76,23 +77,22 @@ class auto_encoder(Base_network):
             zoom_range=0.2,
             horizontal_flip=True)
 
-        test_datagen = ImageDataGenerator(rescale=1./255)
-
         train_generator = train_datagen.flow_from_directory(
             self.settings.train_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
-            batch_size=self.settings.nb_train_samples,
-            class_mode='binary')
+            class_mode=None)
 
+        
+        
 
-        imgs = train_generator.next()
-        x_train = np.array(imgs[0])
+        for e in range(self.settings.nb_epoch):
+            print "Epoche " + str(e)
 
-        model.fit(x_train,
-                  x_train,
-                  nb_epoch=self.settings.nb_epoch)
-
-
+            imgs = train_generator.next()
+            model.fit(imgs, imgs, 32, 1, 1)
+            for i in range(self.settings.nb_train_samples/32):
+                imgs = train_generator.next()
+                model.fit(imgs, imgs, 32, 1, 0)
 
         return model, None
 
