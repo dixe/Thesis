@@ -32,6 +32,34 @@ class auto_encoder(Base_network):
 
     def get_model(self):
 
+        model = Sequential()
+
+        model.add(ftl.FTLayer(input_shape=(3, self.settings.img_width, self.settings.img_height)))
+
+        conv0 = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')
+
+        conv1 = Convolution2D(30, 3, 3, activation='relu', border_mode='same')
+
+
+
+        model.add(conv1)
+
+        model.add(conv0)
+
+
+        model.add(conv1)
+
+        model.add(conv0)
+
+        print  self.has_weights()
+        if self.has_weights():
+            model.load_weights(self.settings.save_weights_path)
+            print "loaded_model"
+
+
+
+        return model
+
 
         model = Sequential()
         model.add(ftl.FTLayer(input_shape=(3, self.settings.img_width, self.settings.img_height)))
