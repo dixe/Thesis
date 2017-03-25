@@ -35,27 +35,8 @@ class auto_encoder(Base_network):
 
         conv1 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')
         x = conv1(input_img)
-        x = MaxPooling2D((2,2), border_mode="same")(x)
-
-        conv2 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')
-        x = conv2(x)
-        x = MaxPooling2D((2,2), border_mode="same")(x)
-
-        conv3 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')
-        x = conv3(x)
-        encoded = MaxPooling2D((2,2), border_mode="same")(x)
-
-
-
-        # decoding layer
-        x = conv3(encoded)
-        x = UpSampling2D((2,2))(x)
-
-        x = conv2(x)
-        x = UpSampling2D((2,2))(x)
 
         x = conv1(x)
-        x = UpSampling2D((2,2))(x)
 
         decoded = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')(x)
 
