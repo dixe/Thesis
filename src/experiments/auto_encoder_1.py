@@ -63,7 +63,6 @@ class auto_encoder(Auto_encoder):
             print "loaded_model"
 
 
-        exit()
         return model
 
 
