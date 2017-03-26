@@ -153,7 +153,13 @@ if __name__ == "__main__":
 
         model = fsm.get_model_test(settings)
         callback(model)
-    elif 'ae' in sys.argv: # auto_encoder_0.py
+    elif 'ae0' in sys.argv: # auto_encoder_0.py
+        import auto_encoder_0 as ae
+        callback = evaluate_model_ae
+        model = ae.get_model_test(settings)
+        callback(model)
+
+    elif 'ae1' in sys.argv: # auto_encoder_1.py
         import auto_encoder_0 as ae
         callback = evaluate_model_ae
         model = ae.get_model_test(settings)
