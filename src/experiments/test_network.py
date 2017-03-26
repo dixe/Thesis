@@ -82,10 +82,9 @@ def evaluate_model_and_report(model):
     return res
 
 
-def predict_img_path(model, path):
+def predict_img_path(path,model):
 
     img = cv2.imread(path)
-
 
     print model.predict_img(img)
 
@@ -96,6 +95,15 @@ def correct(name, pred):
     else:
         return pred > 0.5
 
+
+def get_path(args):
+    path = ""
+    if 'path' in args:
+        i = args.index('path')
+        path = args[i+1]
+
+    return path
+        
 
 if __name__ == "__main__":
 
@@ -113,12 +121,18 @@ if __name__ == "__main__":
         callback = evaluate_model_and_report
 
 
-    if 'pred' in sys.argv:
-        callback =
+
+
+
     guid_substring = sys.argv[-1]
 
     settings = ws.get_settings(guid_substring)
 
+    path = get_path(sys.argv)
+
+    if 'pred' in sys.argv:
+        fun = lambda(model : predict_img_path(path,model))
+        callback = fun
 
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
@@ -163,4 +177,4 @@ if __name__ == "__main__":
         import auto_encoder_0 as ae
         callback = evaluate_model_ae
         model = ae.get_model_test(settings)
-        callback(model)
+        callback(path)
