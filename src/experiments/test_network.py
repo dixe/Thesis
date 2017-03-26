@@ -88,13 +88,13 @@ def predict_img_path(path,net):
     size = net.get_input_shape()
     print size
 
-    img = cv2.resize(img, size)
+    img_in = cv2.resize(img, size) / 255.0
 
-    img = np.array([img])
-    res = net.predict_img(img)
+    img_in = np.array([img_in])
+    res = net.predict_img(img_in) * 255
 
 
-    cv2.imwrite("Orig.png",img[0])
+    cv2.imshow("Orig.png",img)
     cv2.imwrite("Predict.png",res[0])
 
 
