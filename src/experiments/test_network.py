@@ -131,7 +131,7 @@ if __name__ == "__main__":
     path = get_path(sys.argv)
 
     if 'pred' in sys.argv:
-        fun = lambda(model : predict_img_path(path,model))
+        fun = lambda model : predict_img_path(path,model)
         callback = fun
 
 
