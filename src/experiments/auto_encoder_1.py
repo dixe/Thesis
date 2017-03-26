@@ -34,7 +34,7 @@ class auto_encoder(Base_network):
 
         model = Sequential()
 
-        model.add(ftl.FTLayer(input_shape=(3, self.settings.img_width, self.settings.img_height)))
+        model.add(ftl.FTLayer(input_shape=(3, self.settings.img_height, self.settings.img_width)))
 
         conv0 = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')
 
@@ -44,8 +44,11 @@ class auto_encoder(Base_network):
 
         model.add(conv1)
 
-        model.add(conv0)
+        model.add(MaxPooling2D((2,2), border_mode="same"))
 
+        model.add(conv0)
+        
+        model.add(UpSampling2D((2,2)))
 
         model.add(conv1)
 
@@ -60,44 +63,6 @@ class auto_encoder(Base_network):
 
         return model
 
-
-        model = Sequential()
-        model.add(ftl.FTLayer(input_shape=(3, self.settings.img_width, self.settings.img_height)))
-
-        flat= 3*self.settings.img_width * self.settings.img_height
-        print flat
-        model.add(Reshape((3*self.settings.img_width * self.settings.img_height,)))
-        model.add(RepeatVector(10))
-
-        model.add(Reshape((30,self.settings.img_width, self.settings.img_height)))
-
-
-        conv1 = Convolution2D(30, 3, 3, activation='relu', border_mode='same')
-
-        model.add(conv1)
-        model.add(conv1)
-
-
-        model.add(Convolution2D(3,3,3, activation="sigmoid", border_mode='same'))
-        return model
-
-        exit()
-        x = conv1(x)
-
-        decoded = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')(x)
-
-        model = Model(input_img, decoded)
-
-
-
-        print  self.has_weights()
-        if self.has_weights():
-            model.load_weights(self.settings.save_weights_path)
-            print "loaded_model"
-
-
-
-        return model
 
 
     def train_model(self, model):
@@ -115,19 +80,32 @@ class auto_encoder(Base_network):
 
 
 
-        for e in range(self.settings.nb_epoch):
-            print "Epoche " + str(e)
+        history = None
+
+        losses = []
+        j = 0
+        while history == None or self.should_stop(losses):
+            print "Epoche " + str(j)
 
             imgs = train_generator.next()
-            model.fit(imgs, imgs, 32, 1, 1)
+            history = model.fit(imgs, imgs, 32, 1, 1)
             for i in range(self.settings.nb_train_samples/32):
                 imgs = train_generator.next()
                 model.fit(imgs, imgs, 32, 1, 0)
 
-        for l in model.layers:
-            print l.get_weights()
+            losses.append(history.history['loss'])
+            j +=1
+
+
+
+        for i in range(len(model.layers[-2].get_weights())):
+            print (model.layers[-2].get_weights()[i] == model.layers[-6].get_weights()[i]).all()
         return model, None
 
+
+    def should_stop(self, losses):
+
+        return len(losses) < 100
 
     def get_model_train(self):
         model = self.get_model()
