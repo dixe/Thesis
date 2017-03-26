@@ -8,7 +8,6 @@ from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 import os
-import cv2
 
 class Base_network(object):
     """
@@ -111,13 +110,7 @@ class Auto_encoder(Base_network):
         model = self.get_model_test()
 
         res_img = model.predict(img)
-
-        cv2.imshow("Original", img)
-
-        cv2.imshow("Predicted", res_img)
-
-        cv2.waitKey()
-
+        
         return res_img
 
 
