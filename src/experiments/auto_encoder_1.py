@@ -34,7 +34,7 @@ class auto_encoder(Auto_encoder):
 
         model = Sequential()
 
-        model.add(ftl.FTLayer(input_shape=(3, self.settings.img_height, self.settings.img_width)))
+        model.add(ftl.FTLayer(input_shape=(self.settings.img_height, self.settings.img_width,3)))
 
         conv0 = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')
 
