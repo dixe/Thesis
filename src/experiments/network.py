@@ -8,11 +8,12 @@ from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 import os
-
+import cv2
 
 class Base_network(object):
     """
     Base class for nets handles data paths, writing results and weights
+    Classification networks should have this as base type
     """
 
 
@@ -88,6 +89,80 @@ class Base_network(object):
 
     def has_weights(self):
         return os.path.isfile(self.settings.save_weights_path)
+
+
+    def predict_img(self, img):
+
+        model = self.get_model_test()
+
+
+
+
+        return model.predict(img)
+
+
+class Auto_encoder(Base_network):
+    """
+    Base class autoencoder nets handles target is not a class (num), but an image
+    Auto_encoder networks should have this as base type
+    """
+
+    def predict_img(self, img):
+        model = self.get_model_test()
+
+        res_img = model.predict(img)
+
+        cv2.imshow("Original", img)
+
+        cv2.imshow("Predicted", res_img)
+
+        cv2.waitKey()
+
+        return res_img
+
+
+
+
+
+    def train_model(self, model):
+        train_datagen = ImageDataGenerator(
+            rescale=1./255,
+            shear_range=0.2,
+            zoom_range=0.2,
+            horizontal_flip=True)
+
+        train_generator = train_datagen.flow_from_directory(
+            self.settings.train_data_dir,
+            target_size=(self.settings.img_height, self.settings.img_width),
+            class_mode=None)
+
+        history = None
+
+        losses = []
+        j = 0
+        while history == None or self.should_stop(losses):
+            print "Epoche " + str(j)
+
+            imgs = train_generator.next()
+            history = model.fit(imgs, imgs, 32, 1, 1)
+            for i in range(self.settings.nb_train_samples/32):
+                imgs = train_generator.next()
+                model.fit(imgs, imgs, 32, 1, 0)
+
+            losses.append(history.history['loss'])
+            j +=1
+
+
+
+        for i in range(len(model.layers[-2].get_weights())):
+            print (model.layers[-2].get_weights()[i] == model.layers[-6].get_weights()[i]).all()
+        return model, None
+
+
+    def should_continiue(self, losses):
+
+        return len(losses) < 100
+
 
 def default_settings():
     return rs.Net_settings(rs.img_width,
