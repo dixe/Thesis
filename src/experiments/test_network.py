@@ -3,7 +3,7 @@ import run_settings as rs
 import json
 import Weightstore as ws
 import numpy as np
-
+import cv2
 
 def visualize_model(model):
     from keras.utils.visualize_util import plot
@@ -81,6 +81,15 @@ def evaluate_model_and_report(model):
 
     return res
 
+
+def predict_img_path(model, path):
+
+    img = cv2.imread(path)
+
+
+    print model.predict_img(img)
+
+
 def correct(name, pred):
     if name.startswith("broken"):
         return pred < 0.5
@@ -104,6 +113,8 @@ if __name__ == "__main__":
         callback = evaluate_model_and_report
 
 
+    if 'pred' in sys.argv:
+        callback =
     guid_substring = sys.argv[-1]
 
     settings = ws.get_settings(guid_substring)
