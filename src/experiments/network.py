@@ -153,8 +153,9 @@ class Auto_encoder(Base_network):
 
 
     def should_continiue(self, losses):
-
         return len(losses) < 2
+        return len(losses) < 100
+
 
 
 def default_settings():
