@@ -94,10 +94,12 @@ class Base_network(object):
 
         model = self.get_model_test()
 
-
-
-
         return model.predict(img)
+
+
+    def get_input_shape(self):
+        return (self.settings.img_width,self.settings.img_height)
+
 
 
 class Auto_encoder(Base_network):
@@ -110,9 +112,8 @@ class Auto_encoder(Base_network):
         model = self.get_model_test()
 
         res_img = model.predict(img)
-        
-        return res_img
 
+        return res_img
 
 
 

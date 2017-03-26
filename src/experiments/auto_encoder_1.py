@@ -34,6 +34,8 @@ class auto_encoder(Auto_encoder):
 
         model = Sequential()
 
+        print self.settings.img_width, self.settings.img_height
+
         model.add(ftl.FTLayer(input_shape=(self.settings.img_height, self.settings.img_width,3)))
 
 

@@ -5,7 +5,7 @@ import Weightstore as ws
 import numpy as np
 import cv2
 
-def visualize_model(model):
+def visualize_model(net):
     from keras.utils.visualize_util import plot
 
     plot(model, to_file= sys.argv[2]+'.png')
@@ -82,11 +82,20 @@ def evaluate_model_and_report(model):
     return res
 
 
-def predict_img_path(path,model):
+def predict_img_path(path,net):
 
     img = cv2.imread(path)
+    size = net.get_input_shape()
+    print size
 
-    print model.predict_img(img)
+    img = cv2.resize(img, size)
+
+    img = np.array([img])
+    res = net.predict_img(img)
+
+
+    cv2.imwrite("Orig.png",img[0])
+    cv2.imwrite("Predict.png",res[0])
 
 
 def correct(name, pred):
@@ -103,7 +112,7 @@ def get_path(args):
         path = args[i+1]
 
     return path
-        
+
 
 if __name__ == "__main__":
 
@@ -174,7 +183,6 @@ if __name__ == "__main__":
         callback(model)
 
     elif 'ae1' in sys.argv: # auto_encoder_1.py
-        import auto_encoder_0 as ae
-        callback = evaluate_model_ae
-        model = ae.get_model_test(settings)
-        callback(path)
+        import auto_encoder_1 as ae
+        net = ae.get_net(settings)
+        callback(net)
