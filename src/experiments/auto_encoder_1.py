@@ -46,7 +46,7 @@ class auto_encoder(Auto_encoder):
         model.add(MaxPooling2D((2,2), border_mode="same"))
 
         model.add(conv0)
-        
+
         model.add(UpSampling2D((2,2)))
 
         model.add(conv1)
@@ -86,9 +86,8 @@ def train(guid_substring = None):
     net = auto_encoder(settings)
     net.fine_tune_and_save()
 
-def get_model_test(settings):
-    net = auto_encoder(settings)
-    return net.get_model_test()
+def get_net(settings):
+    return auto_encoder(settings)
 
 if __name__ == "__main__":
     guid_substring = sys.argv[-1]

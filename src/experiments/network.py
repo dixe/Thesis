@@ -160,7 +160,7 @@ class Auto_encoder(Base_network):
 
 
     def should_continiue(self, losses):
-
+        return False
         return len(losses) < 100
 
 
