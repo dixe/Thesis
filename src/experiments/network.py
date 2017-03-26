@@ -133,7 +133,7 @@ class Auto_encoder(Base_network):
 
         losses = []
         j = 0
-        while history == None or self.should_stop(losses):
+        while history == None or self.should_continiue(losses):
             print "Epoche " + str(j)
 
             imgs = train_generator.next()
@@ -154,7 +154,7 @@ class Auto_encoder(Base_network):
 
     def should_continiue(self, losses):
 
-        return len(losses) < 100
+        return len(losses) < 2
 
 
 def default_settings():
