@@ -131,8 +131,6 @@ if __name__ == "__main__":
 
 
 
-
-
     guid_substring = sys.argv[-1]
 
     settings = ws.get_settings(guid_substring)
