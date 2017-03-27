@@ -3,6 +3,7 @@ from keras import optimizers
 from keras.models import Sequential, Model
 from keras.layers import Input, UpSampling2D, Convolution2D, MaxPooling2D, ZeroPadding2D, RepeatVector, Reshape
 from keras.layers import Activation, Dropout, Flatten, Dense
+from keras.layers.noise import GausianNoise
 from keras.preprocessing.image import ImageDataGenerator
 from network import Base_network, Auto_encoder, default_settings
 from run_settings import Net_settings
@@ -34,29 +35,23 @@ class auto_encoder(Auto_encoder):
 
         model = Sequential()
 
-        print self.settings.img_width, self.settings.img_height
 
-        model.add(ftl.FTLayer(input_shape=(self.settings.img_height, self.settings.img_width,3)))
+        stddev = 0.2
+        model.add(GaussianNoise(stddev,input_shape=( self.settings.img_width, self.settings.img_height,3)))
 
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
 
+        model.add(Flatten())
 
-        conv0 = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')
+        #Intermedite layer
+        model.add(Dense(128))
 
+        model.add(Dense(self.settings.img_width* self.settings.img_height,3))
 
-        conv1 = Convolution2D(30, 3, 3, activation='relu', border_mode='same')
+        model.add(Reshape((self.settings.img_width, self.settings.img_height,3)))
 
-        model.add(conv1)
-
-        model.add(MaxPooling2D((2,2), border_mode="same"))
-
-        model.add(conv0)
-
-
-        model.add(UpSampling2D((2,2)))
-
-        model.add(conv1)
-
-        model.add(conv0)
+        for l in model.layers:
+            print l.input_shape, m.output_shape
 
 
         print self.has_weights()
