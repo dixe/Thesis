@@ -8,6 +8,8 @@ from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 import os
+import MyImgGenerator as mig
+
 
 class Base_network(object):
     """
@@ -31,7 +33,7 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.4):
+    def get_session(self, gpu_fraction=0.8):
         """
         With 8 gb of ram, use ~4 gb
         """
@@ -119,6 +121,9 @@ class Auto_encoder(Base_network):
 
 
     def train_model(self, model):
+
+
+        nb_batch_size = 32
         train_datagen = ImageDataGenerator(
             rescale=1./255,
             shear_range=0.2,
@@ -127,9 +132,26 @@ class Auto_encoder(Base_network):
 
         train_generator = train_datagen.flow_from_directory(
             self.settings.train_data_dir,
+            batch_size = nb_batch_size,
             target_size=(self.settings.img_height, self.settings.img_width),
             class_mode=None)
+ 
+        train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(
+            self.settings.train_data_dir,
+            batch_size = 32,
+            target_size=(self.settings.img_height, self.settings.img_width),
+            class_mode=None))
 
+
+        #fine-tune the model
+        history = model.fit_generator(
+            train_generator,
+            samples_per_epoch=self.settings.nb_train_samples,
+            nb_epoch=self.settings.nb_epoch)
+            
+        return model, history
+    
+   
         history = None
 
         losses = []
@@ -138,18 +160,16 @@ class Auto_encoder(Base_network):
             print "Epoche " + str(j)
 
             imgs = train_generator.next()
-            history = model.fit(imgs, imgs, 32, 1, 1)
-            for i in range(self.settings.nb_train_samples/32):
+            history = model.fit(imgs, imgs, nb_batch_size, 1, 1)
+            for i in range(self.settings.nb_train_samples):
                 imgs = train_generator.next()
-                model.fit(imgs, imgs, 32, 1, 0)
+                model.fit(imgs, imgs, nb_batch_size, 1, 0)
 
             losses.append(history.history['loss'])
             j +=1
 
 
 
-        for i in range(len(model.layers[-2].get_weights())):
-            print (model.layers[-2].get_weights()[i] == model.layers[-6].get_weights()[i]).all()
         return model, None
 
 
