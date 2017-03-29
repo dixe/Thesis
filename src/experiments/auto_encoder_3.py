@@ -34,15 +34,13 @@ class auto_encoder(Auto_encoder):
 
         model = Sequential()
 
+        stddev = 0.2
 
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=( 3,self.settings.img_height, self.settings.img_width)))
+        model.add(GaussianNoise(stddev),input_shape=( 3,self.settings.img_height, self.settings.img_width))
 
-        model.add(Flatten())
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
 
-        #Intermedite layer
-
-        model.add(Dense(256, activation='relu'))
-
+        #model.add(Flatten())
 
         model.add(Dense(self.settings.img_width * self.settings.img_height * 3,activation='sigmoid'))
 
@@ -72,7 +70,7 @@ class auto_encoder(Auto_encoder):
         return model
 
     def model_name(self):
-        return "auto_encoder_2"
+        return "auto_encoder_3 Gaussian noise model"
 
 
     def description(self):

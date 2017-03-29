@@ -29,16 +29,15 @@ class simple_model(Base_network):
     def get_model(self):
 
         model = Sequential()
-        model.add(Convolution2D(32, 3, 3, input_shape=(3, self.settings.img_width, self.settings.img_height)))
+
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=(3, self.settings.img_width, self.settings.img_height)))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
         model.add(Activation('relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Convolution2D(32, 3, 3))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-
-        model.add(Convolution2D(64, 3, 3))
-        model.add(Activation('relu'))
+        model.add(Convolution2D(64, 3, 3, activation='relu', border_mode='same'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
@@ -48,7 +47,8 @@ class simple_model(Base_network):
         model.add(Dense(1))
         model.add(Activation('sigmoid'))
 
-        print  self.has_weights()
+        print self.has_weights()
+
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
