@@ -9,7 +9,7 @@ import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 import os
 import MyImgGenerator as mig
-
+import h5py
 
 class Base_network(object):
     """
@@ -33,7 +33,7 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.8):
+    def get_session(self, gpu_fraction=0.4):
         """
         With 8 gb of ram, use ~4 gb
         """
@@ -56,13 +56,13 @@ class Base_network(object):
         test_datagen = ImageDataGenerator(rescale=1./255)
 
         train_generator = train_datagen.flow_from_directory(
-            self.settings.train_data_dir,
+            rs.train_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
 
         validation_generator = test_datagen.flow_from_directory(
-            self.settings.validation_data_dir,
+            rs.validation_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
@@ -70,8 +70,8 @@ class Base_network(object):
         # fine-tune the model
         history = model.fit_generator(
             train_generator,
-            samples_per_epoch=self.settings.nb_train_samples,
-            nb_epoch=self.settings.nb_epoch,
+            samples_per_epoch=rs.nb_train_samples,
+            nb_epoch=rs.nb_epoch,
             validation_data=validation_generator,
             nb_val_samples=self.settings.nb_validation_samples)
 
@@ -103,6 +103,21 @@ class Base_network(object):
         return (self.settings.img_width,self.settings.img_height)
 
 
+    def set_pretrained_weights(self, model):
+        import auto_encoder_3 as ae3
+        guid_substring = "85df"
+        weight_settings = ws.get_settings(guid_substring)
+
+        path = "weights/{0}".format(weight_settings.guid)
+
+        ae = ae3.auto_encoder(weight_settings)
+
+        ae_model = ae.get_model()
+
+        model.layers[0].set_weights(ae_model.layers[1].get_weights())
+
+        return model
+
 
 class Auto_encoder(Base_network):
     """
@@ -124,21 +139,17 @@ class Auto_encoder(Base_network):
 
 
         nb_batch_size = 32
+
         train_datagen = ImageDataGenerator(
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
             horizontal_flip=True)
 
-        train_generator = train_datagen.flow_from_directory(
-            self.settings.train_data_dir,
-            batch_size = nb_batch_size,
-            target_size=(self.settings.img_height, self.settings.img_width),
-            class_mode=None)
- 
+        
         train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(
-            self.settings.train_data_dir,
-            batch_size = 32,
+            rs.train_data_dir,
+            batch_size = nb_batch_size,
             target_size=(self.settings.img_height, self.settings.img_width),
             class_mode=None))
 
@@ -146,8 +157,9 @@ class Auto_encoder(Base_network):
         #fine-tune the model
         history = model.fit_generator(
             train_generator,
-            samples_per_epoch=self.settings.nb_train_samples,
-            nb_epoch=self.settings.nb_epoch)
+            samples_per_epoch=rs.nb_train_samples,
+            nb_epoch=rs.nb_epoch,
+            max_q_size=1)
             
         return model, history
     

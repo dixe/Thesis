@@ -36,15 +36,16 @@ class auto_encoder(Auto_encoder):
 
         stddev = 0.2
 
-        model.add(GaussianNoise(stddev),input_shape=( 3,self.settings.img_height, self.settings.img_width))
+        model.add(GaussianNoise(stddev,input_shape=(3, self.settings.img_height, self.settings.img_width)))
 
         model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
 
+        model.add(Convolution2D(3, 3, 3, activation='relu', border_mode='same'))
         #model.add(Flatten())
 
-        model.add(Dense(self.settings.img_width * self.settings.img_height * 3,activation='sigmoid'))
+        #model.add(Dense(self.settings.img_width * self.settings.img_height * 3,activation='sigmoid'))
 
-        model.add(Reshape((3, self.settings.img_height, self.settings.img_width)))
+        #model.add(Reshape((3, self.settings.img_height, self.settings.img_width)))
 
         for l in model.layers:
             print l.input_shape, l.output_shape
@@ -71,6 +72,7 @@ class auto_encoder(Auto_encoder):
 
     def model_name(self):
         return "auto_encoder_3 Gaussian noise model"
+        a = "85df"
 
 
     def description(self):

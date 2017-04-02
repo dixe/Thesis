@@ -21,8 +21,10 @@ class simple_model(Base_network):
                       optimizer='rmsprop',
                       metrics=['accuracy','recall','precision'])
 
-
+        
         model.load_weights(self.settings.get_save_weights_path)
+
+        
 
         return model
 
@@ -52,9 +54,10 @@ class simple_model(Base_network):
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
-
-
-
+            
+        
+        model = self.set_pretrained_weights(model)
+        
         return model
 
 
@@ -71,6 +74,7 @@ class simple_model(Base_network):
         return "simple_model"
 
 
+        
 
 def train(guid_substring = None):
     settings = ws.get_settings(guid_substring)
