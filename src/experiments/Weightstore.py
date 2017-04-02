@@ -63,7 +63,7 @@ def store_settings(settings):
 
     vals = (str(settings.guid), name, settings.model_name, settings.description)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?,?,?)", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'))", vals)
     conn.commit()
     return settings
 
@@ -93,7 +93,7 @@ def get_settings_model_name(model_name):
     uuid_settings = c.fetchall()
 
     for settings in uuid_settings:
-        print "{0}, {2}, {1}".format(settings[2], settings[0], settings[3])
+        print "{0}, {2}, {3}, {1}".format(settings[2], settings[0], settings[3], settings[4])
 
     return uuid_settings
 

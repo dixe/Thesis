@@ -122,5 +122,6 @@ def get_model_test(settings):
     return net.get_model_test()
 
 if __name__ == "__main__":
+    sys.argv = filter(lambda x : x != '',sys.argv )
     guid_substring = sys.argv[-1]
     train(guid_substring)

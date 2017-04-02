@@ -1,26 +1,30 @@
 import uuid
 
+#dataset_name = 'auto_encoder_all_patches'
 dataset_name = 'data-64-1000-400'
 
+train_data_dir = "/home/ltm741/thesis/datasets/{0}/train/".format(dataset_name)
+#train_data_dir = "/home/ltm741/thesis/datasets/{0}/".format(dataset_name)
 
-train_data_dir = "/home/nikolaj/Thesis/datasets/{0}/train/".format(dataset_name)
+validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
-validation_data_dir = "/home/nikolaj/Thesis/datasets/{0}/validation".format(dataset_name)
-
-eval_data_dir = "/home/nikolaj/Thesis/datasets/{0}/validation".format(dataset_name)
+eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
 
 weights_folder = "weights/"
 settings_folder = "settings/"
+
+#img_width = 280
+#img_height = 176
 
 img_width = 64
 img_height = img_width
 
 nb_validation_samples = 800
 
-nb_train_samples = 2000
+nb_train_samples = 2000 #86350 #120  #7850
 
-nb_epoch = 1
+nb_epoch = 5
 
 
 
@@ -45,6 +49,7 @@ class Net_settings(object):
         self.save_weights_path = "{0}/{1}.h5".format(weights_folder, self.guid)
         self.model_name = model_name
         self.description = description
+
 
     def get_dict(self):
         sd = {}

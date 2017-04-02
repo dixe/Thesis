@@ -29,6 +29,22 @@ def v_0_3():
     print "added description as TEXT column"
 
 
+def v_0_4():
+    conn = ws.get_db_conn()
+
+    c = conn.cursor()
+
+    SQL = "ALTER TABLE settings ADD COLUMN dt DATETIME;"
+
+    c.execute(SQL)
+
+    conn.commit()
+
+    print "added datetime column"
+
+
+
+
 if __name__ == "__main__":
 
-    v_0_3()
+    v_0_4()

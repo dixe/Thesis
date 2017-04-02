@@ -92,7 +92,7 @@ class Base_network(object):
 
     def get_run_description(self):
         if 'des' in sys.argv:
-            return sys.argv(sys.argv.index('des') + 1)
+            return sys.argv[sys.argv.index('des') + 1]
 
         return ""
 
