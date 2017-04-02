@@ -81,6 +81,12 @@ def evaluate_model_and_report(model):
 
     return res
 
+def visualize_weights(net):
+
+    model = net.get_model_train()
+
+    print model.layers[1].get_weights()
+
 
 def predict_img_path(path,net):
 
@@ -130,6 +136,8 @@ if __name__ == "__main__":
         callback = evaluate_model_and_report
 
 
+    if 'wei' in sys.argv:
+        callback = visualize_weights
 
     guid_substring = sys.argv[-1]
 
@@ -182,5 +190,10 @@ if __name__ == "__main__":
 
     elif 'ae1' in sys.argv: # auto_encoder_1.py
         import auto_encoder_1 as ae
+        net = ae.get_net(settings)
+        callback(net)
+
+    elif 'ae3' in sys.argv: # auto_encoder_3.py
+        import auto_encoder_3 as ae
         net = ae.get_net(settings)
         callback(net)

@@ -19,14 +19,15 @@ def load_settings_file(name, guid_string):
 
 
     return (rs.Net_settings( set_dict["img_width"],
-                                         set_dict["img_height"],
-                                         set_dict["train_data_dir"],
-                                         set_dict["validation_data_dir"],
-                                         set_dict["nb_train_samples"],
-                                         set_dict["nb_validation_samples"],
-                                         set_dict["nb_epoch"],
-                                         uuid.UUID(guid_string),
-                                         set_dict.get("model_name","")))
+                             set_dict["img_height"],
+                             set_dict["train_data_dir"],
+                             set_dict["validation_data_dir"],
+                             set_dict["nb_train_samples"],
+                             set_dict["nb_validation_samples"],
+                             set_dict["nb_epoch"],
+                             uuid.UUID(guid_string),
+                             set_dict.get("model_name",""),
+                             set_dict.get("description","")))
 
 
 def load_settings(guid_substring):
@@ -60,9 +61,9 @@ def store_settings(settings):
 
     c = conn.cursor()
 
-    vals = (str(settings.guid), name, settings.model_name)
+    vals = (str(settings.guid), name, settings.model_name, settings.description)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?,?)", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES(?,?,?,?)", vals)
     conn.commit()
     return settings
 

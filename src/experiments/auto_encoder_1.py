@@ -40,7 +40,7 @@ class auto_encoder(Auto_encoder):
 
 
 
-        conv0 = Convolution2D(3,3,3, activation="sigmoid", border_mode='same')
+        conv0 = Convolution2D(3,1,1, activation="sigmoid", border_mode='same')
 
 
         conv1 = Convolution2D(30, 3, 3, activation='relu', border_mode='same')
@@ -50,12 +50,13 @@ class auto_encoder(Auto_encoder):
         model.add(MaxPooling2D((2,2), border_mode="same"))
 
         model.add(conv0)
-
+        # ADD  dense layer with lower than m x n
 
         model.add(UpSampling2D((2,2)))
 
         model.add(conv1)
 
+        #Maybe use dense layer
         model.add(conv0)
 
 

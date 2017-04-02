@@ -7,7 +7,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
-import os
+import os, sys
 import MyImgGenerator as mig
 import h5py
 
@@ -24,6 +24,7 @@ class Base_network(object):
 
 
     def save_model_weight(self, model):
+
         model.save_weights(self.settings.save_weights_path)
 
         ws.store_settings(self.settings)
@@ -79,9 +80,21 @@ class Base_network(object):
 
     def fine_tune_and_save(self):
         KTF.set_session(self.get_session())
+
         model = self.get_model_train()
+
+        self.settings.description = self.get_run_description()
+
         model, history = self.train_model(model)
+
         self.save_model_weight(model)
+
+
+    def get_run_description(self):
+        if 'des' in sys.argv:
+            return sys.argv(sys.argv.index('des') + 1)
+
+        return ""
 
 
     def model_name(self):
@@ -146,7 +159,7 @@ class Auto_encoder(Base_network):
             zoom_range=0.2,
             horizontal_flip=True)
 
-        
+
         train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(
             rs.train_data_dir,
             batch_size = nb_batch_size,
@@ -160,10 +173,10 @@ class Auto_encoder(Base_network):
             samples_per_epoch=rs.nb_train_samples,
             nb_epoch=rs.nb_epoch,
             max_q_size=1)
-            
+
         return model, history
-    
-   
+
+
         history = None
 
         losses = []

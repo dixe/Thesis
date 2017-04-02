@@ -15,6 +15,20 @@ def v_0_2():
     print "added model_name as TEXT column"
 
 
+def v_0_3():
+    conn = ws.get_db_conn()
+
+    c = conn.cursor()
+
+    SQL = "ALTER TABLE settings ADD COLUMN description TEXT;"
+
+    c.execute(SQL)
+
+    conn.commit()
+
+    print "added description as TEXT column"
+
+
 if __name__ == "__main__":
 
-    v_0_2()
+    v_0_3()
