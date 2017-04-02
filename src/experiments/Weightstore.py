@@ -93,7 +93,7 @@ def get_settings_model_name(model_name):
     uuid_settings = c.fetchall()
 
     for settings in uuid_settings:
-        print "{0}, {1}".format(settings[2], settings[0])
+        print "{0}, {2}, {1}".format(settings[2], settings[0], settings[3])
 
     return uuid_settings
 
