@@ -88,6 +88,9 @@ def get_model_test(settings):
     net = simple_model(settings)
     return net.get_model_test()
 
+def get_net(settings):
+    return simple_model(settings)
+
 
 if __name__ == "__main__":
     sys.argv = filter(lambda x : x != '',sys.argv )

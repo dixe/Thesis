@@ -82,11 +82,30 @@ def evaluate_model_and_report(model):
     return res
 
 def visualize_weights(net):
-
+    
     model = net.get_model_train()
 
-    print model.layers[1].get_weights()
+    weights = model.layers[0].get_weights()
+    
+    filter_img_size = 6 * len(weights[0][0]) * len(weights[0][0][0])
 
+    filter_img = np.zeros((filter_img_size, filter_img_size, 3))
+    weights[0] = weights[0]
+    i = 0
+    for i in range(6):
+        for j in range(6):
+            if i*6 + j >= len(weights[0]):
+                continue
+
+
+            norm_weights = (weights[0][i*6+j] - np.min(weights[0][i*6+j])/ (1.0 * np.max(weights[0][i*6+j])-np.min(weights[0][i*6+j])))*255
+
+            print norm_weights
+
+            filter_img[i*3: i*3 + 3,j*3: j*3 + 3,:] = norm_weights
+            
+    print np.max(np.max(filter_img))
+    cv2.imwrite("weights.png",filter_img)
 
 def predict_img_path(path,net):
 
@@ -95,7 +114,6 @@ def predict_img_path(path,net):
     print size
 
     img_in = cv2.resize(img, size) / 255.0
-
     img_in = np.array([img_in])
     res = net.predict_img(img_in) * 255
 
@@ -125,7 +143,7 @@ if __name__ == "__main__":
 
     callback = evaluate_model
     if len(sys.argv) == 1:
-        print "ftc25, ftc18, fsm0, fsm1, fsm2, fsm3 ae"
+        print "ftc25, ftc18, sm0, sm1, sm2, sm3 ae"
         exit()
 
 
@@ -139,6 +157,7 @@ if __name__ == "__main__":
     if 'wei' in sys.argv:
         callback = visualize_weights
 
+    sys.argv = filter(lambda x : x != '',sys.argv )
     guid_substring = sys.argv[-1]
 
     settings = ws.get_settings(guid_substring)
@@ -160,27 +179,27 @@ if __name__ == "__main__":
 
         model = ftc.get_model_test(settings)
         callback(model)
-    elif 'fsm0' in sys.argv: # simple_model.py
-        import simple_model as fsm
+    elif 'sm0' in sys.argv: # simple_model.py
+        import simple_model as sm
 
-        model = fsm.get_model_test(settings)
+        net = sm.get_net(settings)
+        callback(net)
+
+    elif 'sm1' in sys.argv: # simple_model_1.py
+        import simple_model_1 as sm
+
+        model = sm.get_model_test(settings)
+        callback(model)
+    elif 'sm2' in sys.argv: # simple_model_2.py
+        import simple_model_2 as sm
+
+        model = sm.get_model_test(settings)
         callback(model)
 
-    elif 'fsm1' in sys.argv: # simple_model_1.py
-        import simple_model_1 as fsm
+    elif 'sm3' in sys.argv: # simple_model_3.py
+        import simple_model_3 as sm
 
-        model = fsm.get_model_test(settings)
-        callback(model)
-    elif 'fsm2' in sys.argv: # simple_model_2.py
-        import simple_model_2 as fsm
-
-        model = fsm.get_model_test(settings)
-        callback(model)
-
-    elif 'fsm3' in sys.argv: # simple_model_3.py
-        import simple_model_3 as fsm
-
-        model = fsm.get_model_test(settings)
+        model = sm.get_model_test(settings)
         callback(model)
     elif 'ae0' in sys.argv: # auto_encoder_0.py
         import auto_encoder_0 as ae
