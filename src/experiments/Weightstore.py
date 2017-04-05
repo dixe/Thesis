@@ -102,19 +102,17 @@ def add_settings(guid_name):
 
     settings_path = "settings/{0}.nns".format(guid_name)
 
-    setting = load_settings_file(settings_path, guid_name)
+    settings = load_settings_file(settings_path, guid_name)
 
-    model_name = setting.model_name
+    model_name = settings.model_name
 
 
     conn = get_db_conn()
     c = conn.cursor()
 
-    t = (guid_name,settings_path,model_name)
+    t = (guid_name,settings_path,model_name, settings.description)
 
-    print "inserting"
-
-    c.execute('INSERT INTO settings VALUES (?,?,?)',t)
+    c.execute("INSERT INTO settings VALUES (?,?,?,?,DateTime('now'))",t)
     conn.commit()
 
 
