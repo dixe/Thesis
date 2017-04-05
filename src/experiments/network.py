@@ -34,7 +34,7 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.4):
+    def get_session(self, gpu_fraction=0.99):
         """
         With 8 gb of ram, use ~4 gb
         """
@@ -126,6 +126,8 @@ class Base_network(object):
         ae = ae3.auto_encoder(weight_settings)
 
         ae_model = ae.get_model()
+
+        print "Settings weights from {0}".format(guid_substring)
 
         model.layers[0].set_weights(ae_model.layers[1].get_weights())
 
