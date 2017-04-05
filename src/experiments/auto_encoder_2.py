@@ -41,7 +41,7 @@ class auto_encoder(Auto_encoder):
 
         #Intermedite layer
 
-        model.add(Dense(256, activation='relu'))
+        model.add(Dense(1024, activation='relu'))
 
 
         model.add(Dense(self.settings.img_width * self.settings.img_height * 3,activation='sigmoid'))
@@ -67,7 +67,7 @@ class auto_encoder(Auto_encoder):
 
         sgd = optimizers.SGD(lr=0.1, decay=1e-6, momentum=0.9)
 
-        model.compile(optimizer='adadelta', loss='binary_crossentropy')
+        model.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['accuracy'])
 
         return model
 
