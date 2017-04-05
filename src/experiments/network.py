@@ -52,7 +52,11 @@ class Base_network(object):
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
-            horizontal_flip=True)
+            rotation_range = 360,
+            width_shift_range = 10,
+            height_shift_range= 10,
+            horizontal_flip=True,
+            vertical_flip = True)
 
         test_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -159,7 +163,11 @@ class Auto_encoder(Base_network):
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
-            horizontal_flip=True)
+            rotation_range = 360,
+            width_shift_range = 10,
+            height_shift_range= 10,
+            horizontal_flip=True,
+            vertical_flip = True)
 
 
         train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(

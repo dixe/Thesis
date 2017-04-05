@@ -119,12 +119,21 @@ def add_settings(guid_name):
 
 
 
+def update_description(guid_substring, new_description):
+    setting = get_settings(guid_substring)
 
-def test():
+    if setting == None:
+        exit()
 
-    settings = load_settings("f8463")
+    conn = get_db_conn()
+    c = conn.cursor()
 
-    print len(settings)
+    SQL = "UPDATE settings SET description = ? where uuid = ?"
+
+    c.execute(SQL,(new_description, str(setting.guid)))
+    conn.commit()
+
+    print "Updated {0} description to {1}".format(setting.guid, new_description)
 
 
 if __name__ == "__main__":
@@ -134,11 +143,16 @@ if __name__ == "__main__":
     if "ins" in sys.argv:
         guid = sys.argv[-1]
 
-
         add_settings(guid)
 
         exit()
+    if 'des' in sys.argv:
+        guid = sys.argv[-1]
+        description = sys.argv[sys.argv.index('des') + 1]
 
+        update_description(guid, description)
+
+        exit()
     model_name = sys.argv[-1]
 
     get_settings_model_name(model_name)
