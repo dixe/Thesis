@@ -34,7 +34,7 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.99):
+    def get_session(self, gpu_fraction=0.5):
         """
         With 8 gb of ram, use ~4 gb
         """
@@ -211,7 +211,6 @@ class Auto_encoder(Base_network):
     def should_continiue(self, losses):
         return len(losses) < 2
         return len(losses) < 100
-
 
 
 def default_settings():

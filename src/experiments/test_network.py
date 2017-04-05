@@ -4,6 +4,7 @@ import json
 import Weightstore as ws
 import numpy as np
 import cv2
+from keras.preprocessing.image import load_img, img_to_array
 
 def visualize_model(net):
     from keras.utils.visualize_util import plot
@@ -107,19 +108,27 @@ def visualize_weights(net):
     print np.max(np.max(filter_img))
     cv2.imwrite("weights.png",filter_img)
 
+
+
 def predict_img_path(path,net):
 
-    img = cv2.imread(path)
-    size = net.get_input_shape()
-    print size
+    print "Predicting on {0}".format(path)
 
-    img_in = cv2.resize(img, size) / 255.0
-    img_in = np.array([img_in])
+    img = np.array([img_to_array(load_img(path))])
+    
+    size = net.get_input_shape()
+    
+    print img.shape
+
+    img_in = img / 255.0
+   
     res = net.predict_img(img_in) * 255
 
-
-    cv2.imshow("Orig.png",img)
-    cv2.imwrite("Predict.png",res[0])
+    res_save = np.zeros((1,64,64,3))
+    for c in range(3):
+        res_save[0,:,:,c] = res[0,c,:,:]
+    
+    cv2.imwrite("Predict.png",res_save[0])
 
 
 def correct(name, pred):
@@ -168,7 +177,6 @@ if __name__ == "__main__":
         fun = lambda model : predict_img_path(path,model)
         callback = fun
 
-
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
 
@@ -209,6 +217,11 @@ if __name__ == "__main__":
 
     elif 'ae1' in sys.argv: # auto_encoder_1.py
         import auto_encoder_1 as ae
+        net = ae.get_net(settings)
+        callback(net)
+
+    elif 'ae2' in sys.argv: # auto_encoder_2.py
+        import auto_encoder_2 as ae
         net = ae.get_net(settings)
         callback(net)
 
