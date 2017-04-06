@@ -1,10 +1,11 @@
 import uuid
 
-#dataset_name = 'auto_encoder_all_patches'
-dataset_name = 'data-64-1000-400'
+
+auto_enc = True
+
+dataset_name = 'auto_encoder_all_patches' if auto_enc else 'data-64-1000-400'
 
 train_data_dir = "/home/ltm741/thesis/datasets/{0}/train/".format(dataset_name)
-#train_data_dir = "/home/ltm741/thesis/datasets/{0}/".format(dataset_name)
 
 validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
@@ -22,9 +23,10 @@ img_height = img_width
 
 nb_validation_samples = 800
 
-nb_train_samples = 2000 #86350 #120  #7850
+nb_train_samples = 86350 if auto_enc  else 2000  #120  #7850
 
-nb_epoch = 5
+nb_epoch = 10
+
 
 
 

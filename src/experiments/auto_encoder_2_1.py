@@ -34,7 +34,13 @@ class auto_encoder(Auto_encoder):
 
         model = Sequential()
 
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=( 3,self.settings.img_height, self.settings.img_width)))
+
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=( 3,self.settings.img_height, self.settings.img_width), trainable=False))
+
+
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
 
         model.add(Flatten())
 
@@ -50,15 +56,39 @@ class auto_encoder(Auto_encoder):
         for l in model.layers:
             print l.input_shape, l.output_shape
 
-
+        
+            
         print self.has_weights()
 
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
 
+        else:
+            # if no pretrained weights, initialize frozen layers from other setting
+            model = self.set_frozen_weights('88f', model)
+
 
         return model
+
+
+    def set_frozen_weights(self, guid_sub, model):
+        import auto_encoder_2 as ae2
+        guid_substring = "88f"
+        weight_settings = ws.get_settings(guid_substring)
+
+        path = "weights/{0}".format(weight_settings.guid)
+
+        ae = ae2.auto_encoder(weight_settings)
+
+        ae_model = ae.get_model()
+
+        print "Settings weights from {0}".format(guid_substring)
+
+        model.layers[0].set_weights(ae_model.layers[0].get_weights())
+
+        return model
+
 
 
     def get_model_train(self):
@@ -71,11 +101,11 @@ class auto_encoder(Auto_encoder):
         return model
 
     def model_name(self):
-        return "auto_encoder_2"
+        return "auto_encoder_2_1"
 
 
     def description(self):
-        return "Auto encoder that has same encoder layer settings simple_model"
+        return "Auto encoder 2 for second layer of simple_model, first layer in this encoder is frozen, and should be initialized from a auto_encoder_2 trained setting"
 
 
 def train(guid_substring = None):
