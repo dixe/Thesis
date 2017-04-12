@@ -66,6 +66,11 @@ class simple_model(Base_network):
 
 
 
+    def model_name(self):
+        return "simple_model_3"
+
+
+
 def train(guid_substring = None):
     settings = ws.get_settings(guid_substring)
     if settings == None:

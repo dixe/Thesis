@@ -66,6 +66,10 @@ class simple_model(Base_network):
                       metrics=['accuracy'])
         return model
 
+    def model_name(self):
+        return "Simple model 3"
+
+
 def train(guid_substring = None):
     settings = ws.get_settings(guid_substring)
     if settings == None:
