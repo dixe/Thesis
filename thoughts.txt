@@ -102,17 +102,12 @@ Auto encoders DTU ref 30
 Check lightning difference between images
 
 
+--------------------------------------------------
 
+Add sparsety constraint on dense layer,
 
---------
+Make validation set for auto encoders (just about 5000 randomly selected image)
 
-
-Autoencoders with convolution
-
-
-Sharing weights, with rgb input is 3d, produces 2d, for each filter, thus sharing weights are difficult, since the input and output of layers are different.
-
-
-------
+try with a dense layer of just 512, and compare to 1024
 
 Look at cnn slide for back propergate back through network, to visualize optimal features.

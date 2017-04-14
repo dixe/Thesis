@@ -43,11 +43,9 @@ class simple_model(Base_network):
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
-        model.add(Dense(64))
-        model.add(Activation('relu'))
+        model.add(Dense(128, activation='relu'))
         model.add(Dropout(0.5))
-        model.add(Dense(1))
-        model.add(Activation('sigmoid'))
+        model.add(Dense(1, activation='sigmoid'))
 
         print self.has_weights()
 

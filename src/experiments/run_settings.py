@@ -1,7 +1,7 @@
 import uuid
 
 
-auto_enc = True
+auto_enc = False
 
 dataset_name = 'auto_encoder_all_patches' if auto_enc else 'data-64-1000-400'
 
@@ -25,9 +25,7 @@ nb_validation_samples = 800
 
 nb_train_samples = 86350 if auto_enc  else 2000  #120  #7850
 
-nb_epoch = 10
-
-
+nb_epoch = 100
 
 
 class Net_settings(object):

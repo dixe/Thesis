@@ -49,8 +49,9 @@ class Base_network(object):
             shear_range=0.2,
             zoom_range=0.2,
             rotation_range=360,
-            width_shift_range=10,
-            height_shift_range=10,
+            rotation_range = 180,
+            #width_shift_range = 10,
+            #height_shift_range= 10,
             horizontal_flip=True,
             vertical_flip=True)
 
@@ -117,19 +118,23 @@ class Base_network(object):
 
 
     def set_pretrained_weights(self, model):
-        import auto_encoder_3 as ae3
-        guid_substring = "85df"
+        import auto_encoder_2_1 as ae21
+        guid_substring = "413c"
         weight_settings = ws.get_settings(guid_substring)
 
         path = "weights/{0}".format(weight_settings.guid)
 
-        ae = ae3.auto_encoder(weight_settings)
+        ae = ae21.auto_encoder(weight_settings)
 
         ae_model = ae.get_model()
 
         print "Settings weights from {0}".format(guid_substring)
 
-        model.layers[0].set_weights(ae_model.layers[1].get_weights())
+        model.layers[0].set_weights(ae_model.layers[0].get_weights())
+        model.layers[1].set_weights(ae_model.layers[1].get_weights())
+
+        for l in model.layers:
+            print l.trainable
 
         return model
 
@@ -139,6 +144,8 @@ class Base_network(object):
 
     def get_model_test(self):
         raise NotImplementedError
+
+
 
 class Auto_encoder(Base_network):
     """

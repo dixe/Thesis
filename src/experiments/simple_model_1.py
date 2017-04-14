@@ -49,7 +49,7 @@ class simple_model(Base_network):
         model.add(Dense(1))
         model.add(Activation('sigmoid'))
 
-        print  self.has_weights()
+        print "Found weights" if self.has_weights() else "No weights found"
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
@@ -59,11 +59,15 @@ class simple_model(Base_network):
 
     def get_model_train(self):
         model = self.get_model()
+
         # compile the model with a SGD/momentum optimizer
         # and a very slow learning rate.
+
+        sgd = optimizers.SGD(0.01,0.9, 0.0, True)
+
         model.compile(loss='binary_crossentropy',
                       optimizer='rmsprop',
-                      metrics=['hinge'])
+                      metrics=['accuracy'])
         return model
 
     def model_name(self):
