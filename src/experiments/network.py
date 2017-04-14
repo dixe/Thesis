@@ -2,11 +2,13 @@ import os
 import sys
 import run_settings as rs
 import Weightstore as ws
+from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 import MyImgGenerator as mig
 import callback as mcb
+
 class Base_network(object):
     """
     Base class for nets handles data paths, writing results and weights
@@ -23,7 +25,7 @@ class Base_network(object):
 
         model.save_weights(self.settings.save_weights_path)
 
-        ws.store_settings(self.settings)
+        ws.store_settings(self.settings, model)
 
         # Add to overview file/table
         print "saved to {0}".format(self.settings.save_weights_path)

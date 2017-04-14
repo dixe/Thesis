@@ -49,9 +49,17 @@ def load_settings(guid_substring):
 
     return settings
 
-def store_settings(settings):
+def store_settings(settings, model=None):
+
     if settings.guid == None:
         settings.guid = uuid.uuid4()
+
+
+    if not model is None:
+        # store model as json, with uuid as name, in model
+        model_json = model.to_json()
+        with open ("models/{0}.json".format(str(settings.guid)),'w+') as jf:
+            jf.write(model_json)
 
     name = rs.settings_folder + str(settings.guid) + ".nns"
     with open(name, 'w+') as fp:
