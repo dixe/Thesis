@@ -1,16 +1,12 @@
+import os
+import sys
 import run_settings as rs
 import Weightstore as ws
-from keras import optimizers
-from keras.models import Sequential
-from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
-import os, sys
 import MyImgGenerator as mig
-import h5py
-
+import callback as mcb
 class Base_network(object):
     """
     Base class for nets handles data paths, writing results and weights
@@ -52,11 +48,11 @@ class Base_network(object):
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
-            rotation_range = 360,
-            width_shift_range = 10,
-            height_shift_range= 10,
+            rotation_range=360,
+            width_shift_range=10,
+            height_shift_range=10,
             horizontal_flip=True,
-            vertical_flip = True)
+            vertical_flip=True)
 
         test_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -117,7 +113,7 @@ class Base_network(object):
 
 
     def get_input_shape(self):
-        return (self.settings.img_width,self.settings.img_height)
+        return (self.settings.img_width, self.settings.img_height)
 
 
     def set_pretrained_weights(self, model):
@@ -137,6 +133,12 @@ class Base_network(object):
 
         return model
 
+    def get_model_train(self):
+        raise NotImplementedError
+
+
+    def get_model_test(self):
+        raise NotImplementedError
 
 class Auto_encoder(Base_network):
     """
@@ -151,11 +153,7 @@ class Auto_encoder(Base_network):
 
         return res_img
 
-
-
-
     def train_model(self, model):
-
 
         nb_batch_size = 32
 
@@ -163,24 +161,26 @@ class Auto_encoder(Base_network):
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
-            rotation_range = 360,
-            width_shift_range = 10,
-            height_shift_range= 10,
+            rotation_range=360,
+            width_shift_range=10,
+            height_shift_range=10,
             horizontal_flip=True,
-            vertical_flip = True)
+            vertical_flip=True)
 
 
         train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(
             rs.train_data_dir,
-            batch_size = nb_batch_size,
+            batch_size=nb_batch_size,
             target_size=(self.settings.img_height, self.settings.img_width),
             class_mode=None))
 
 
+        stop_callback = mcb.Stop_callback()
         #fine-tune the model
         history = model.fit_generator(
             train_generator,
             samples_per_epoch=rs.nb_train_samples,
+            callbacks=[stop_callback],
             nb_epoch=rs.nb_epoch,
             max_q_size=1)
 
@@ -191,7 +191,7 @@ class Auto_encoder(Base_network):
 
         losses = []
         j = 0
-        while history == None or self.should_continiue(losses):
+        while history is None or self.should_continiue(losses):
             print "Epoche " + str(j)
 
             imgs = train_generator.next()
@@ -201,7 +201,7 @@ class Auto_encoder(Base_network):
                 model.fit(imgs, imgs, nb_batch_size, 1, 0)
 
             losses.append(history.history['loss'])
-            j +=1
+            j += 1
 
 
 
@@ -210,14 +210,14 @@ class Auto_encoder(Base_network):
 
     def should_continiue(self, losses):
         return len(losses) < 2
-        return len(losses) < 100
+        #return len(losses) < 100
 
 
 def default_settings():
     return rs.Net_settings(rs.img_width,
-                        rs.img_height,
-                        rs.train_data_dir,
-                        rs.validation_data_dir,
-                        rs.nb_train_samples,
-                        rs.nb_validation_samples,
-                        rs.nb_epoch)
+                           rs.img_height,
+                           rs.train_data_dir,
+                           rs.validation_data_dir,
+                           rs.nb_train_samples,
+                           rs.nb_validation_samples,
+                           rs.nb_epoch)
