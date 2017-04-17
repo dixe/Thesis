@@ -14,15 +14,20 @@ class simple_model(Base_network):
         Base_network.__init__(self,settings)
 
 
+    
+
     def get_model_test(self):
-        model = self.get_model()
+
+        model = self.load_model()
+        if model is None:
+            model = self.get_model()
 
         model.compile(loss='binary_crossentropy',
                       optimizer='rmsprop',
                       metrics=['accuracy','recall','precision'])
 
         
-        model.load_weights(self.settings.get_save_weights_path)
+        model.load_weights(self.settings.save_weights_path)
 
         
 
@@ -52,9 +57,9 @@ class simple_model(Base_network):
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
-            
-        
-        model = self.set_pretrained_weights(model)
+        else:    
+            print "No Weights found settings pretrained weights"
+            model = self.set_pretrained_weights(model)
         
         return model
 

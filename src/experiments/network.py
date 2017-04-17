@@ -50,10 +50,9 @@ class Base_network(object):
             rescale=1./255,
             shear_range=0.2,
             zoom_range=0.2,
-            rotation_range=360,
             rotation_range = 180,
-            #width_shift_range = 10,
-            #height_shift_range= 10,
+            #width_shift_range = 2,
+            #height_shift_range= 2,
             horizontal_flip=True,
             vertical_flip=True)
 
@@ -147,6 +146,18 @@ class Base_network(object):
     def get_model_test(self):
         raise NotImplementedError
 
+
+    def load_model(self):
+        json_string = ""
+        with open ("models/{0}.json".format(str(self.settings.guid)),'r+') as jf:
+            json_string = jf.read()
+            
+        if not json_string == "":
+            model = model_from_json(json_string) 
+            return 
+
+        return None
+        
 
 
 class Auto_encoder(Base_network):

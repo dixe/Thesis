@@ -75,6 +75,8 @@ def store_settings(settings, model=None):
     conn.commit()
     return settings
 
+        
+    
 
 def get_settings(guid_substring):
     settings = load_settings(guid_substring)
