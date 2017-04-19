@@ -5,6 +5,11 @@ import Weightstore as ws
 import numpy as np
 import cv2
 from keras.preprocessing.image import load_img, img_to_array
+import utils as ut
+try:
+    import PIL.Image as Image
+except ImportError:
+    import Image
 
 def visualize_model(net):
     from keras.utils.visualize_util import plot
@@ -83,31 +88,17 @@ def evaluate_model_and_report(model):
     return res
 
 def visualize_weights(net):
-    
+
     model = net.get_model_train()
 
     weights = model.layers[0].get_weights()
-    
-    filter_img_size = 6 * len(weights[0][0]) * len(weights[0][0][0])
-
-    filter_img = np.zeros((filter_img_size, filter_img_size, 3))
-    weights[0] = weights[0]
-    i = 0
-    for i in range(6):
-        for j in range(6):
-            if i*6 + j >= len(weights[0]):
-                continue
 
 
-            norm_weights = (weights[0][i*6+j] - np.min(weights[0][i*6+j])/ (1.0 * np.max(weights[0][i*6+j])-np.min(weights[0][i*6+j])))*255
-
-            print norm_weights
-
-            filter_img[i*3: i*3 + 3,j*3: j*3 + 3,:] = norm_weights
-            
-    print np.max(np.max(filter_img))
-    cv2.imwrite("weights.png",filter_img)
-
+    image = Image.fromarray(ut.tile_raster_images(
+        X=weights.T,
+        img_shape=(28,28), tile_shape=(10,10),
+        tile_spacing=(1,1)))
+    image.save('filter_layer_0.png')
 
 
 def predict_img_path(path,net):
@@ -115,19 +106,19 @@ def predict_img_path(path,net):
     print "Predicting on {0}".format(path)
 
     img = np.array([img_to_array(load_img(path))])
-    
+
     size = net.get_input_shape()
-    
+
     print img.shape
 
     img_in = img / 255.0
-   
+
     res = net.predict_img(img_in) * 255
 
     res_save = np.zeros((1,64,64,3))
     for c in range(3):
         res_save[0,:,:,c] = res[0,c,:,:]
-    
+
     cv2.imwrite("Predict.png",res_save[0])
 
 
