@@ -21,7 +21,16 @@ class Base_network(object):
         self.settings.model_name = self.model_name()
 
 
-    def save_model_weight(self, model):
+    def save_model_weight(self, model, history = None):
+
+        results_str = ""
+
+        if not history is None:
+            #Take the last results, which is what the weights set represent
+            results_str = "loss: {0:.4f} - acc; {1:.4f} - val_loss: {2:0.4f} - val_acc: {3:.04f}".format(history['loss'][-1], history['acc'][-1], history['val_loss'][-1], history['val_acc'][-1])
+
+            print results_str
+        exit()
 
         model.save_weights(self.settings.save_weights_path)
 
@@ -80,6 +89,7 @@ class Base_network(object):
 
         return model, history
 
+
     def fine_tune_and_save(self):
         KTF.set_session(self.get_session())
 
@@ -89,7 +99,7 @@ class Base_network(object):
 
         model, history = self.train_model(model)
 
-        self.save_model_weight(model)
+        self.save_model_weight(model, history)
 
 
     def get_run_description(self):
@@ -151,13 +161,13 @@ class Base_network(object):
         json_string = ""
         with open ("models/{0}.json".format(str(self.settings.guid)),'r+') as jf:
             json_string = jf.read()
-            
+
         if not json_string == "":
-            model = model_from_json(json_string) 
-            return 
+            model = model_from_json(json_string)
+            return
 
         return None
-        
+
 
 
 class Auto_encoder(Base_network):
@@ -206,26 +216,6 @@ class Auto_encoder(Base_network):
 
         return model, history
 
-
-        history = None
-
-        losses = []
-        j = 0
-        while history is None or self.should_continiue(losses):
-            print "Epoche " + str(j)
-
-            imgs = train_generator.next()
-            history = model.fit(imgs, imgs, nb_batch_size, 1, 1)
-            for i in range(self.settings.nb_train_samples):
-                imgs = train_generator.next()
-                model.fit(imgs, imgs, nb_batch_size, 1, 0)
-
-            losses.append(history.history['loss'])
-            j += 1
-
-
-
-        return model, None
 
 
     def should_continiue(self, losses):
