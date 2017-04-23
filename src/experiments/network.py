@@ -21,19 +21,18 @@ class Base_network(object):
         self.settings.model_name = self.model_name()
 
 
-    def save_model_weight(self, model, history = None):
+    def save_model_weight(self, model, history):
 
         results_str = ""
 
-        if not history is None:
-            #Take the last results, which is what the weights set represent
-            results_str = "loss: {0:.4f} - acc; {1:.4f} - val_loss: {2:0.4f} - val_acc: {3:.04f}".format(history['loss'][-1], history['acc'][-1], history['val_loss'][-1], history['val_acc'][-1])
+        #Take the last results, which is what the weights set represent
+        results_str = "loss: {0:.4f} - acc; {1:.4f} - val_loss: {2:0.4f} - val_acc: {3:.04f}".format(history['loss'][-1], history['acc'][-1], history['val_loss'][-1], history['val_acc'][-1])
 
-            print "Results string: '{0}'".format(results_str)
+        print "Results string: '{0}'".format(results_str)
 
         model.save_weights(self.settings.save_weights_path)
 
-        ws.store_settings(self.settings, model, results_str)
+        ws.store_settings(self.settings, model, history)
 
         # Add to overview file/table
         print "saved to {0}".format(self.settings.save_weights_path)

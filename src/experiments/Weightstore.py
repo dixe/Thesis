@@ -49,7 +49,7 @@ def load_settings(guid_substring):
 
     return settings
 
-def store_settings(settings, model=None, results_str=""):
+def store_settings(settings, model=None, history):
 
     if settings.guid == None:
         settings.guid = uuid.uuid4()
@@ -65,13 +65,20 @@ def store_settings(settings, model=None, results_str=""):
     with open(name, 'w+') as fp:
         json.dump(settings.get_dict(),fp)
 
+    loss = history['loss'][-1]
+    acc = history['acc'][-1]
+    val_acc = history['val_acc'][-1]
+    val_loss = history['val_loss'][-1]
+
     conn = get_db_conn()
 
     c = conn.cursor()
 
-    vals = (str(settings.guid), name, settings.model_name, settings.description, results_str)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'),?)", vals)
+
+    vals = (str(settings.guid), name, settings.model_name, settings.description, loss, acc, val_loss, val_acc)
+
+    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'),?,?,?,?)", vals)
     conn.commit()
     return settings
 
