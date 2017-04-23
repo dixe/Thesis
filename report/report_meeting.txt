@@ -1,0 +1,16 @@
+talk about realword problem
+
+describe the framework (CNN)
+
+simulation is training and getting results
+
+
+What is an experiment:
+
+A way to try out a hypothesis with fixed parameters, such that the parameters can be changed and the results compared in a reasonable fashion.
+
+
+
+A good experiment:
+
+Know all parameters that can change, change one at a time
