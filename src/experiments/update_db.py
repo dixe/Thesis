@@ -43,8 +43,23 @@ def v_0_4():
     print "added datetime column"
 
 
+def v_0_5():
+    conn = ws.get_db_conn()
+
+    c = conn.cursor()
+
+    SQL = "ALTER TABLE settings ADD COLUMN results TEXT;"
+
+    c.execute(SQL)
+
+    conn.commit()
+
+    print "added results as TEXT column"
+
+
 
 
 if __name__ == "__main__":
 
-    v_0_4()
+    #v_0_4()
+    v_0_5()
