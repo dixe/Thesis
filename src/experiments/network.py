@@ -29,8 +29,7 @@ class Base_network(object):
             #Take the last results, which is what the weights set represent
             results_str = "loss: {0:.4f} - acc; {1:.4f} - val_loss: {2:0.4f} - val_acc: {3:.04f}".format(history['loss'][-1], history['acc'][-1], history['val_loss'][-1], history['val_acc'][-1])
 
-            print results_str
-        exit()
+            print "Results string: '{0}'".format(results_str)
 
         model.save_weights(self.settings.save_weights_path)
 
