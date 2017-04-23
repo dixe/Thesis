@@ -49,7 +49,7 @@ def load_settings(guid_substring):
 
     return settings
 
-def store_settings(settings, model=None):
+def store_settings(settings, model=None, results_str=""):
 
     if settings.guid == None:
         settings.guid = uuid.uuid4()
@@ -69,14 +69,14 @@ def store_settings(settings, model=None):
 
     c = conn.cursor()
 
-    vals = (str(settings.guid), name, settings.model_name, settings.description)
+    vals = (str(settings.guid), name, settings.model_name, settings.description, results_str)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'))", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'),?)", vals)
     conn.commit()
     return settings
 
-        
-    
+
+
 
 def get_settings(guid_substring):
     settings = load_settings(guid_substring)
