@@ -34,7 +34,7 @@ class Base_network(object):
 
         model.save_weights(self.settings.save_weights_path)
 
-        ws.store_settings(self.settings, model)
+        ws.store_settings(self.settings, model, results_str)
 
         # Add to overview file/table
         print "saved to {0}".format(self.settings.save_weights_path)
@@ -99,7 +99,7 @@ class Base_network(object):
 
         model, history = self.train_model(model)
 
-        self.save_model_weight(model, history)
+        self.save_model_weight(model, history.history)
 
 
     def get_run_description(self):
