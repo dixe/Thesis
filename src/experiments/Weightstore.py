@@ -76,9 +76,9 @@ def store_settings(settings, model, history):
 
 
 
-    vals = (str(settings.guid), name, settings.model_name, settings.description, loss, acc, val_loss, val_acc)
+    vals = (str(settings.guid), settings.model_name, settings.description, loss, acc, val_loss, val_acc)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,?,DateTime('now'),?,?,?,?)", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,DateTime('now'),?,?,?,?)", vals)
     conn.commit()
     return settings
 
