@@ -49,7 +49,7 @@ def load_settings(guid_substring):
 
     return settings
 
-def store_settings(settings, model=None, history):
+def store_settings(settings, model, history):
 
     if settings.guid == None:
         settings.guid = uuid.uuid4()
