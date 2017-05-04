@@ -1,0 +1,135 @@
+Mail til roboert om
+
+
+
+
+####################
+filter størrelse antal filtre
+
+
+
+sample inden for +- 45 grader, spring af 5 grader
+
+
+
+SKALA: tag patch, find skala hvor det kal simulere 2 lag gør path større
+
+
+
+TRANSLATION: translationer i alle 4 retninger, eller bare i første kvadrant
+
+
+
+experimenter hvor vi har med og uden invariance i fx rotation, og translation
+
+
+
+gamma: correction, så vi lære invariance i lys
+
+
+
+se om vi kan fake fra camera til camera
+
+
+
+ensamble learning, med flere nets, fanger invariance i træning
+
+
+Patch størelse, test - kunne slippe af sted med at
+
+
+Tjek gennemsnit størrelse majs, for at argumentere for at 64x64 er fint, uden experimenter
+
+
+Overvej om vi skal annotere MOG, for at få finere, tjek lige om der er nok MOG til at det giver mening.
+
+
+F1 score, precision recall
+
+
+####################
+
+Topologi
+
+
+Lag
+
+
+Filtre, størrelse og antal
+
+
+dropout rate, til sidst når der er en topologi som ser ud til at virke
+
+
+strategi, kan misse optimalle løsning, da alle ikke tjekkes
+
+
+####################
+
+To uafhængide spor, måske
+
+
+
+####################
+
+Andre
+
+
+
+####################
+
+crossvalidation
+
+
+####################
+
+
+Start med simple model
+
+
+få data augmentation på plads via den
+
+
+med det datasæt, som har bedst data aurgmentation
+
+
+find topologi ud fra dette
+
+
+efter topologi, autoencoder experiment
+
+
+ensamble learning
+
+
+####################
+
+beskriv fejlmål
+
+
+beskriv experimenter, så der er en checklist man skal igennem
+
+
+####################
+
+slut maj
+
+
+theory
+
+
+related works
+
+
+resultat presentation, hvordan
+
+
+####################
+
+Discussion
+
+
+vælg klassifer men ikke feature
+
+
+neurovolution networks, (mario)
