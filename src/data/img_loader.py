@@ -5,13 +5,14 @@ import json
 import utils as UT
 import random as rand
 import numpy as np
+import sys
 
 IMG_META_XML_NAME = "Images Metadata Log.xml"
 
 PATCH_SIZE = 64
 PATCH_SIZE_HALF = PATCH_SIZE / 2
 OFFSET_RANGE = 5
-NUM_NON_BROKEN_PATHCES = 10
+NUM_NON_BROKEN_PATHCES = 0
 
 
 class ImgLoad(object):
@@ -65,7 +66,8 @@ class ImgLoad(object):
         if not self.valid:
             return [],[]
         broken_patches = self.create_broken_patches()
-        non_broken_patches = self.create_non_broken_patches(NUM_NON_BROKEN_PATHCES)
+        non_broken_patches = self.create_non_broken_patches(len(broken_patches))
+
 
         return broken_patches,non_broken_patches
 
@@ -82,16 +84,24 @@ class ImgLoad(object):
 
         img = self.img
         tries = 0
-        while i < num_patches and tries < 100:
+
+
+
+        while i < num_patches and tries < 1000:
 
             cx = rand.randint(x_min,x_max)
             cy = rand.randint(y_min,y_max)
 
             if self.valid_non_broken_center(cx,cy,centers):
                 centers.append((cx,cy))
-                patches.append(self.extract_patch(self.img(), cx, cy))
+                angle = rand.randint(1,360)
+                patch = subimage(self.img(), (cx,cy), angle, PATCH_SIZE, PATCH_SIZE)
+                patches.append(patch)
                 i +=1
             tries += 1
+
+
+
 
         return patches
 
@@ -112,18 +122,27 @@ class ImgLoad(object):
         return True
 
 
+    def in_roi(self, cx,cy):
+        roi = self.roi
+
+        return cx >= roi[0] and cx <= roi[2] and cy >= roi[1] and cy <= roi[3]
+
     def create_broken_patches(self):
         patches = []
         for a in self.annotations:
 
             x_off = rand.randint(-OFFSET_RANGE,OFFSET_RANGE)
             y_off = rand.randint(-OFFSET_RANGE,OFFSET_RANGE)
-            cx = a.center[0] + x_off
-            cy = a.center[1] + y_off
+            cx = a.center[0]# + x_off
+            cy = a.center[1]# + y_off
             img = self.img()
 
-
-            patches.append(self.extract_patch(img, cx, cy))
+            rotations = 6
+            if self.in_roi(cx,cy): # TODO fix this, so we just shift instead
+                for j in range(rotations):
+                    angle = rand.randint(1,360)
+                    patch = subimage(img, (cx,cy), angle, PATCH_SIZE, PATCH_SIZE)
+                    patches.append(patch)
 
         return patches
 
@@ -237,3 +256,33 @@ def get_all_annotations(path):
                 root = tree.getroot()
                 annos += get_all_annotations_from_xml(root)
     return annos
+
+
+def subimage(image, center, theta, width, height):
+   """
+   Code from:
+   http://stackoverflow.com/questions/11627362/how-to-straighten-a-rotated-rectangle-area-of-an-image-using-opencv-in-python
+
+   http://stackoverflow.com/questions/11627362/how-to-straighten-a-rotated-rectangle-area-of-an-image-using-opencv-in-python
+   """
+   theta *= 3.14159 / 180 # convert to rad
+
+   v_x = (np.cos(theta), np.sin(theta))
+   v_y = (-np.sin(theta), np.cos(theta))
+   s_x = center[0] - v_x[0] * (width / 2) - v_y[0] * (height / 2)
+   s_y = center[1] - v_x[1] * (width / 2) - v_y[1] * (height / 2)
+
+   mapping = np.array([[v_x[0],v_y[0], s_x],
+                        [v_x[1],v_y[1], s_y]])
+
+   return cv2.warpAffine(image,mapping,(width, height),flags=cv2.WARP_INVERSE_MAP,borderMode=cv2.BORDER_REPLICATE)
+
+if __name__ == "__main__":
+
+    path = sys.argv[sys.argv.index("path") +1]
+
+    print path
+
+
+    if "count" in sys.argv:
+        print len(get_all_annotations(path))

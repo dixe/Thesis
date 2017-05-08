@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     path = 'E://Speciale//auto_encoder_data//'
 
-    new_root = 'E://Speciale//auto_encoder_all_imgs//'
+    new_root = 'E://Speciale//auto_encoder_all_imgs//train//imgs//'
 
 
     idd = 0
@@ -15,4 +15,4 @@ if __name__ == "__main__":
             new_name = "{0}-{1}".format(idd,f)
             shutil.copy(r + '//' + f, new_root + new_name)
 
-        idd+=1
+            idd+=1
