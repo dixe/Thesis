@@ -28,7 +28,7 @@ def load_settings_file(name, guid_string):
                              uuid.UUID(guid_string),
                              set_dict.get("model_name",""),
                              set_dict.get("description",""),
-                             set_dict.get("dataset",""))
+                             set_dict.get("dataset","")))
 
 
 def load_settings(guid_substring):
