@@ -43,7 +43,7 @@ def load_settings(guid_substring):
 
     settings = []
     for s in uuid_settings:
-        name = "{0}.nss".format(s[0])
+        name = "settings/{0}.nns".format(s[0])
 
         settings.append(load_settings_file(name, s[0]))
 
