@@ -5,7 +5,7 @@ auto_enc = False
 
 
 dataset_name = 'auto_encoder_all_patches' if auto_enc else 'patches'
- 
+
 train_data_dir = "/home/ltm741/thesis/datasets/arg_data_sets/{0}/train/".format(dataset_name)
 
 validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
@@ -35,7 +35,7 @@ nb_epoch = 30
 class Net_settings(object):
 
 
-    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None, model_name = "", description = ""):
+    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None, model_name = "", description = "", dataset = ""):
         # path to the model weights file.
         self.load_weights_path = ""
         # dimensions of our images.
@@ -53,6 +53,7 @@ class Net_settings(object):
         self.save_weights_path = "{0}/{1}.h5".format(weights_folder, self.guid)
         self.model_name = model_name
         self.description = description
+        self.dataset = dataset
 
 
     def get_dict(self):
@@ -70,6 +71,7 @@ class Net_settings(object):
         sd["nb_epoch"] = self.nb_epoch
         sd["model_name"] = self.model_name
         sd["description"] = self.description
+        sd["dataset"] = self.dataset
         return sd
 
 

@@ -77,6 +77,20 @@ def v_0_6():
     print "added results as TEXT column"
 
 
+def v_0_7():
+    conn = ws.get_db_conn()
+
+    c = conn.cursor()
+
+    SQL = "ALTER TABLE settings ADD COLUMN dataset TEXT;"
+
+    c.execute(SQL)
+
+    conn.commit()
+
+    print "added dataset as TEXT column"
+
+
 
 
 def create_db():
@@ -86,7 +100,7 @@ def create_db():
     c = conn.cursor()
 
 
-    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, path varchar(512),model_name TEXT,dt DATETIME, acc REAL, loss REAL, val_loss REAL, val_acc REAL);"
+    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, path varchar(512),model_name TEXT,dt DATETIME, acc REAL, loss REAL, val_loss REAL, val_acc REAL, dataset TEXT);"
 
     c.execute(SQL)
 
@@ -98,6 +112,6 @@ def create_db():
 if __name__ == "__main__":
 
 
-    #v_0_4()
+    v_0_7()
 
-    create_db()
+    #create_db()

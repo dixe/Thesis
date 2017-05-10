@@ -27,7 +27,8 @@ def load_settings_file(name, guid_string):
                              set_dict["nb_epoch"],
                              uuid.UUID(guid_string),
                              set_dict.get("model_name",""),
-                             set_dict.get("description","")))
+                             set_dict.get("description",""),
+                             set_dict.get("dataset",""))
 
 
 def load_settings(guid_substring):
@@ -76,9 +77,9 @@ def store_settings(settings, model, history):
 
 
 
-    vals = (str(settings.guid), settings.model_name, settings.description, loss, acc, val_loss, val_acc)
+    vals = (str(settings.guid), settings.model_name, settings.description, loss, acc, val_loss, val_acc, settings.dataset)
 
-    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,DateTime('now'),?,?,?,?)", vals)
+    c.execute("INSERT OR REPLACE INTO settings VALUES (?,?,?,DateTime('now'),?,?,?,?,?)", vals)
     conn.commit()
     return settings
 
