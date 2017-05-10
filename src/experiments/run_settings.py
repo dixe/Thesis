@@ -3,13 +3,17 @@ import uuid
 
 auto_enc = False
 
-dataset_name = 'auto_encoder_all_patches' if auto_enc else 'data-64-1000-400'
 
-train_data_dir = "/home/ltm741/thesis/datasets/{0}/train/".format(dataset_name)
+dataset_name = 'auto_encoder_all_patches' if auto_enc else 'patches'
+ 
+train_data_dir = "/home/ltm741/thesis/datasets/arg_data_sets/{0}/train/".format(dataset_name)
 
 validation_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
 
-eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
+#eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
+
+
+full_imgs_path = "/home/ltm741/thesis/datasets/BG_Sequences_w_ROI_Annotated/Oktober 15, 2016/"
 
 
 weights_folder = "weights/"
@@ -21,11 +25,11 @@ settings_folder = "settings/"
 img_width = 64
 img_height = img_width
 
-nb_validation_samples = 800
+nb_validation_samples = 1610
 
-nb_train_samples = 86350 if auto_enc  else 2000  #120  #7850
+nb_train_samples = 86350 if auto_enc  else 9122  #120  #7850
 
-nb_epoch = 100
+nb_epoch = 30
 
 
 class Net_settings(object):
