@@ -1,0 +1,10 @@
+epoch: 0, pqt: -0.0, train_loss : None, train_acc : None, val_loss : 0.446847593784, val_acc : 0.790625
+epoch: 1, pqt: -0.0, train_loss : None, train_acc : None, val_loss : 0.425550279021, val_acc : 0.815625
+epoch: 2, pqt: -0.0140487834881, train_loss : None, train_acc : None, val_loss : 0.445393240452, val_acc : 0.79375
+epoch: 3, pqt: -0.475368900031, train_loss : None, train_acc : None, val_loss : 0.609343633056, val_acc : 0.759375
+epoch: 4, pqt: 0.0, train_loss : None, train_acc : None, val_loss : 0.370014502853, val_acc : 0.821875
+epoch: 5, pqt: 0.0495818195763, train_loss : None, train_acc : None, val_loss : 0.392335733771, val_acc : 0.81875
+epoch: 6, pqt: 0.729829283451, train_loss : None, train_acc : None, val_loss : 0.597585314512, val_acc : 0.8125
+epoch: 7, pqt: 0.0, train_loss : None, train_acc : None, val_loss : 0.335695765913, val_acc : 0.840625
+epoch: 8, pqt: 0.211846097692, train_loss : None, train_acc : None, val_loss : 0.354757621884, val_acc : 0.84375
+epoch: 9, pqt: 2.71723916608, train_loss : None, train_acc : None, val_loss : 0.515426301956, val_acc : 0.803125
