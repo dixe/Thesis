@@ -4,7 +4,7 @@ import uuid
 import sqlite3
 import sys
 
-DBNAME = "weightdb.db"
+DBNAME = "weightdb_exps.db"
 
 
 def get_db_conn():
@@ -162,6 +162,7 @@ if __name__ == "__main__":
         add_settings(guid)
 
         exit()
+
     if 'des' in sys.argv:
         guid = sys.argv[-1]
         description = sys.argv[sys.argv.index('des') + 1]
@@ -169,6 +170,7 @@ if __name__ == "__main__":
         update_description(guid, description)
 
         exit()
+
     model_name = sys.argv[-1]
 
     get_settings_model_name(model_name)
