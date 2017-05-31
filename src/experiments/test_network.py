@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 from keras.preprocessing.image import load_img, img_to_array
 import utils as ut
+
 try:
     import PIL.Image as Image
 except ImportError:
@@ -100,7 +101,7 @@ def visualize_weights(net):
     weights = model.layers[layer].get_weights()
 
     print weights[0].shape
-    
+
     raster = ut.tile_raster_images(
         X=weights[0][0:3].reshape((32*3,3*3)),
         img_shape=(3,3), tile_shape=(10,10),
@@ -133,6 +134,28 @@ def predict_img_path(path,net):
     cv2.imwrite("Predict.png",res_save[0])
 
 
+def find_error_images(net, imgs_path):
+
+    model = net.get_model_test()
+
+    from keras.preprocessing.image import ImageDataGenerator
+
+    eval_datagen = ImageDataGenerator(rescale=1./255)
+
+    eval_generator = eval_datagen.flow_from_directory(
+        rs.validation_data_dir,
+        target_size=(rs.img_height, rs.img_width),
+        batch_size=rs.nb_validation_samples,
+        class_mode='binary')
+
+    imgs = eval_generator.next()
+    x_eval = np.array(imgs[0])
+
+
+    print imgs
+
+
+
 def correct(name, pred):
     if name.startswith("broken"):
         return pred < 0.5
@@ -154,7 +177,7 @@ if __name__ == "__main__":
 
     callback = evaluate_model
     if len(sys.argv) == 1:
-        print "ftc25, ftc18, sm0, sm1, sm2, sm3 ae"
+        print "ftc25, ftc18, sm, sm1, sm2, sm3 ae"
         exit()
 
 
@@ -168,6 +191,8 @@ if __name__ == "__main__":
     if 'wei' in sys.argv:
         callback = visualize_weights
 
+
+
     sys.argv = filter(lambda x : x != '',sys.argv )
     guid_substring = sys.argv[-1]
 
@@ -177,6 +202,10 @@ if __name__ == "__main__":
 
     if 'pred' in sys.argv:
         fun = lambda model : predict_img_path(path,model)
+        callback = fun
+
+    if 'imgs_errors' in sys.argv:
+        fun = lambda net : predict_img_path(path, net)
         callback = fun
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
@@ -189,7 +218,7 @@ if __name__ == "__main__":
         model = ftc.get_model_test(settings)
         callback(model)
 
-    elif 'sm0' in sys.argv: # simple_model.py
+    elif 'sm' in sys.argv: # simple_model.py
         import simple_model as sm
 
         net = sm.get_net(settings)
