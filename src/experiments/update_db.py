@@ -65,8 +65,8 @@ def v_0_6():
     c = conn.cursor()
 
 
-    SQL = """ALTER TABLE settings ADD COLUMN acc REAL;
-           ALTER TABLE settings ADD COLUMN loss REAL;
+    SQL = """ALTER TABLE settings ADD COLUMN loss REAL;
+           ALTER TABLE settings ADD COLUMN acc REAL;
            ALTER TABLE settings ADD COLUMN val_loss REAL;
            ALTER TABLE settings ADD COLUMN val_acc REAL;"""
 
@@ -100,7 +100,7 @@ def create_db():
     c = conn.cursor()
 
 
-    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, path varchar(512),model_name TEXT,dt DATETIME, acc REAL, loss REAL, val_loss REAL, val_acc REAL, dataset TEXT);"
+    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, path varchar(512),model_name TEXT,dt DATETIME, loss REAL, acc REAL, val_loss REAL, val_acc REAL, dataset TEXT);"
 
     c.execute(SQL)
 
