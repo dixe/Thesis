@@ -55,9 +55,8 @@ class Base_network(object):
         # prepare data augmentation configuration
         train_datagen = ImageDataGenerator(
             rescale=1./255,
-            shear_range=0.2,
-            zoom_range=0.2,
-            rotation_range = 180,
+            #shear_range=0.2,
+            #zoom_range=0.2,
             #width_shift_range = 2,
             #height_shift_range= 2,
             horizontal_flip=True,
@@ -65,23 +64,28 @@ class Base_network(object):
 
         test_datagen = ImageDataGenerator(rescale=1./255)
 
+        print "Training on dataset: " + self.settings.dataset
+
         train_generator = train_datagen.flow_from_directory(
-            rs.train_data_dir,
+            self.settings.train_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
 
         validation_generator = test_datagen.flow_from_directory(
-            rs.validation_data_dir,
+            self.settings.validation_data_dir,
             target_size=(self.settings.img_height, self.settings.img_width),
             batch_size=32,
             class_mode='binary')
 
+
+        stop_callback = mcb.EarlyStoppingByLossVal(self.settings.dataset)
         # fine-tune the model
         history = model.fit_generator(
             train_generator,
-            samples_per_epoch=rs.nb_train_samples,
             nb_epoch=rs.nb_epoch,
+            samples_per_epoch = rs.size_dict_train[self.settings.dataset],
+            callbacks=[stop_callback],
             validation_data=validation_generator,
             nb_val_samples=self.settings.nb_validation_samples)
 
@@ -131,7 +135,7 @@ class Base_network(object):
         guid_substring = "413c"
         weight_settings = ws.get_settings(guid_substring)
 
-        path = "weights/{0}".format(weight_settings.guid)
+        return model
 
         ae = ae21.auto_encoder(weight_settings)
 
@@ -197,7 +201,7 @@ class Auto_encoder(Base_network):
 
 
         train_generator = mig.MyImgGenerator(train_datagen.flow_from_directory(
-            rs.train_data_dir,
+            self.settings.train_data_dir,
             batch_size=nb_batch_size,
             target_size=(self.settings.img_height, self.settings.img_width),
             class_mode=None))
@@ -221,11 +225,6 @@ class Auto_encoder(Base_network):
         #return len(losses) < 100
 
 
-def default_settings():
-    return rs.Net_settings(rs.img_width,
-                           rs.img_height,
-                           rs.train_data_dir,
-                           rs.validation_data_dir,
-                           rs.nb_train_samples,
-                           rs.nb_validation_samples,
-                           rs.nb_epoch)
+def default_settings(dataset = None):
+
+    return rs.default_settings(dataset)

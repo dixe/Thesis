@@ -13,7 +13,6 @@ class simple_model(Base_network):
 
         Base_network.__init__(self,settings)
 
-
     
 
     def get_model_test(self):
@@ -37,18 +36,18 @@ class simple_model(Base_network):
 
         model = Sequential()
 
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=(3, self.settings.img_width, self.settings.img_height)))
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same',input_shape=(3, self.settings.img_width, self.settings.img_height), init='glorot_uniform'))
+
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same'))
-        model.add(Activation('relu'))
+        model.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same', init='glorot_uniform'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
-        model.add(Convolution2D(64, 3, 3, activation='relu', border_mode='same'))
+        model.add(Convolution2D(64, 3, 3, activation='relu', border_mode='same', init='glorot_uniform'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
-        model.add(Dense(128, activation='relu'))
+        model.add(Dense(256, activation='relu', init='glorot_uniform'))
         model.add(Dropout(0.5))
         model.add(Dense(1, activation='sigmoid'))
 
@@ -57,7 +56,7 @@ class simple_model(Base_network):
         if self.has_weights():
             model.load_weights(self.settings.save_weights_path)
             print "loaded_model"
-        else:    
+        elif False: # setting of pretraining turned off
             print "No Weights found settings pretrained weights"
             model = self.set_pretrained_weights(model)
         
@@ -69,7 +68,7 @@ class simple_model(Base_network):
         # compile the model with a SGD/momentum optimizer
         # and a very slow learning rate.
         model.compile(loss='binary_crossentropy',
-                      optimizer='rmsprop',
+                      optimizer='adam',
                       metrics=['accuracy'])
         return model
 
@@ -86,6 +85,17 @@ def train(guid_substring = None):
 
     net = simple_model(settings)
     net.fine_tune_and_save()
+
+
+def train_dataset(dataset, guid_substring = None):
+    settings = ws.get_settings(guid_substring)
+    if settings == None:
+        settings = default_settings(dataset)
+
+
+    net = simple_model(settings)
+    net.fine_tune_and_save()
+
 
 def get_model_test(settings):
     net = simple_model(settings)

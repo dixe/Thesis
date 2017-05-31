@@ -17,8 +17,9 @@ def visualize_model(net):
     plot(model, to_file= sys.argv[2]+'.png')
 
 
-def evaluate_model_ae(model):
+def evaluate_model_ae(net):
     print "eval"
+    model = net.get_model_test()
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
@@ -36,8 +37,12 @@ def evaluate_model_ae(model):
     print res
     return res
 
-def evaluate_model(model):
+def evaluate_model(net):
+
     print "eval"
+
+    model = net.get_model_test()
+
     from keras.preprocessing.image import ImageDataGenerator
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
@@ -82,8 +87,8 @@ def evaluate_model_and_report(model):
             res_dict[file_names[i]] = float(res[i][0])
 
     print len(res_dict)
-    with open('simple_model_1.json','w+') as fp:
-        json.dump(res_dict,fp)
+    #with open('simple_model_1.json','w+') as fp:
+     #   json.dump(res_dict,fp)
 
     return res
 
@@ -91,14 +96,20 @@ def visualize_weights(net):
 
     model = net.get_model_train()
 
-    weights = model.layers[0].get_weights()
+    layer = 2
+    weights = model.layers[layer].get_weights()
 
+    print weights[0].shape
+    
+    raster = ut.tile_raster_images(
+        X=weights[0][0:3].reshape((32*3,3*3)),
+        img_shape=(3,3), tile_shape=(10,10),
+        tile_spacing=(1,1))
 
-    image = Image.fromarray(ut.tile_raster_images(
-        X=weights.T,
-        img_shape=(28,28), tile_shape=(10,10),
-        tile_spacing=(1,1)))
-    image.save('filter_layer_0.png')
+    print raster
+
+    image = Image.fromarray(raster)
+    image.save('filter_layer_{0}.png'.format(layer))
 
 
 def predict_img_path(path,net):
@@ -126,7 +137,7 @@ def correct(name, pred):
     if name.startswith("broken"):
         return pred < 0.5
     else:
-        return pred > 0.5
+        return pred >= 0.5
 
 
 def get_path(args):
@@ -175,9 +186,9 @@ if __name__ == "__main__":
         callback(model)
     elif "ftc18" in sys.argv: # fine_tune_conv_18.py
         import fine_tune_conv_18 as ftc
-
         model = ftc.get_model_test(settings)
         callback(model)
+
     elif 'sm0' in sys.argv: # simple_model.py
         import simple_model as sm
 

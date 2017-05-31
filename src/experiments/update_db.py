@@ -100,7 +100,7 @@ def create_db():
     c = conn.cursor()
 
 
-    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, path varchar(512),model_name TEXT,dt DATETIME, acc REAL, loss REAL, val_loss REAL, val_acc REAL, dataset TEXT);"
+    SQL = "CREATE TABLE settings(uuid varchar(64) PRIMARY KEY, model_name TEXT, description TEXT, dt DATETIME, loss REAL, acc REAL, val_loss REAL, val_acc REAL, dataset TEXT);"
 
     c.execute(SQL)
 
@@ -110,8 +110,8 @@ def create_db():
 
 
 if __name__ == "__main__":
+    
 
+    #v_0_7()
 
-    v_0_7()
-
-    #create_db()
+    create_db()
