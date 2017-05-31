@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 import run_settings as rs
-import simple_model_0 as sm
+import simple_model as sm
 import Weightstore as ws
 import cv2
 from keras.preprocessing.image import load_img, img_to_array
@@ -35,15 +35,15 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 2):
             if patch.shape == (1,3,window_size,window_size):
 
                 pred = model.predict(patch)
-                if pred >= 0.1:
+                if pred <= 0.5:
                     preds.append(pred)
                     #print preds[-1], i*stride, j*stride
                     res_img[i*stride + window_size/2, j*stride+window_size/2,:] = np.array([0,255,42])
-                    store_patch(patch, "{0}/{1}_{2}.png".format(root,img_name,c))
+                    #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
                     c +=1
                 
 
-    cv2.imwrite("{0}/{1}_output.png".format(root, img_name), res_img)                    
+    cv2.imwrite("{0}/{1}".format(root, img_name), res_img)                    
     print sum(preds)
 
 
@@ -75,6 +75,7 @@ def test_simple(net):
 
     model = net.get_model_test()
 
+    print rs.full_imgs_path
     for r,fs,fs in os.walk(rs.full_imgs_path):
         for f in fs:
             if f.endswith('impurities.bmp'):

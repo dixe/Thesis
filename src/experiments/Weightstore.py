@@ -4,7 +4,7 @@ import uuid
 import sqlite3
 import sys
 
-DBNAME = "weightdb.db"
+DBNAME = "weightdb_exps.db"
 
 
 def get_db_conn():
@@ -28,7 +28,7 @@ def load_settings_file(name, guid_string):
                              uuid.UUID(guid_string),
                              set_dict.get("model_name",""),
                              set_dict.get("description",""),
-                             set_dict.get("dataset",""))
+                             set_dict.get("dataset","")))
 
 
 def load_settings(guid_substring):
@@ -44,7 +44,7 @@ def load_settings(guid_substring):
 
     settings = []
     for s in uuid_settings:
-        name = "{0}.nss".format(s[0])
+        name = "settings/{0}.nns".format(s[0])
 
         settings.append(load_settings_file(name, s[0]))
 
@@ -162,6 +162,7 @@ if __name__ == "__main__":
         add_settings(guid)
 
         exit()
+
     if 'des' in sys.argv:
         guid = sys.argv[-1]
         description = sys.argv[sys.argv.index('des') + 1]
@@ -169,6 +170,7 @@ if __name__ == "__main__":
         update_description(guid, description)
 
         exit()
+
     model_name = sys.argv[-1]
 
     get_settings_model_name(model_name)

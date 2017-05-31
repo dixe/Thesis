@@ -1,0 +1,2 @@
+epoch: 0, pqt: -0.0, train_loss : None, train_acc : None, val_loss : 0.456991276145, val_acc : 0.7625
+epoch: 1, pqt: -0.0, train_loss : None, train_acc : None, val_loss : 0.424935874343, val_acc : 0.80625
