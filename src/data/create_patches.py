@@ -6,6 +6,7 @@ import cv2
 import random
 
 TRAIN_PATH = "E:/Speciale/CLAAS/Datasets/arg_data_sets/"
+BASE_NAME = "patches_32{0}/"
 
 def create_patches_for_path(path, settings):
     broken_patches = []
@@ -90,16 +91,20 @@ def path_sub_name(rot,sc,tl,gm):
     return "{0}{1}{2}{3}".format("_rot" if rot else "", "_sc" if sc else "", "_tl" if tl else "", "_gm" if gm else "")
 
 
-def create_all_patches_comb(anno_path, base_save_path):
-    tf = [False, True]
+def create_all_patches_comb(anno_path, base_save_path, names = ['rot','sc','tl','gm']):
+    rot_tf = [False, True] if 'rot' in names else [False]
+    sc_tf = [False, True] if 'sc' in names else [False]
+    tl_tf = [False, True] if 'tl' in names else [False]
+    gm_tf = [False, True] if 'gm' in names else [False]
 
+    print "Creating for {0}".format(names)
     global TRAIN_PATH
-    for rot in tf:
-        for sc in tf:
-            for tl in tf:
-                for gm in tf:
+    for rot in rot_tf:
+        for sc in sc_tf:
+            for tl in tl_tf:
+                for gm in gm_tf:
 
-                    TRAIN_PATH = base_save_path + "patches{0}/".format(path_sub_name(rot,sc,tl,gm))
+                    TRAIN_PATH = base_save_path + BASE_NAME.format(path_sub_name(rot,sc,tl,gm))
 
                     if os.path.isdir(TRAIN_PATH):
                         continue
@@ -109,16 +114,19 @@ def create_all_patches_comb(anno_path, base_save_path):
 
                     create_patches_for_path(anno_path, settings)
 
-def shuffle_all_comb(base_save_path):
-    tf = [False, True]
+def shuffle_all_comb(base_save_path, names = ['rot','sc','tl','gm']):
+    rot_tf = [False, True] if 'rot' in names else [False]
+    sc_tf = [False, True] if 'sc' in names else [False]
+    tl_tf = [False, True] if 'tl' in names else [False]
+    gm_tf = [False, True] if 'gm' in names else [False]
 
     global TRAIN_PATH
-    for rot in tf:
-        for sc in tf:
-            for tl in tf:
-                for gm in tf:
+    for rot in rot_tf:
+        for sc in sc_tf:
+            for tl in tl_tf:
+                for gm in gm_tf:
 
-                    TRAIN_PATH = base_save_path + "patches{0}/".format(path_sub_name(rot,sc,tl,gm))
+                    TRAIN_PATH = base_save_path + BASE_NAME.format(path_sub_name(rot,sc,tl,gm))
 
                     shuffle_names()
 
@@ -126,21 +134,23 @@ def shuffle_all_comb(base_save_path):
 if __name__ == "__main__":
     anno_path = "E:/Speciale/CLAAS/BG_Sequences_w_ROI_Annotated/"
 
-    base_save_path = "E:/Speciale/CLAAS/Datasets/arg_data_sets_few_whole/"
+    base_save_path = "E:/Speciale/CLAAS/Datasets/arg_data_sets_few_whole_32/"
     rotation = False
     scale = False
     translate = False
     gamma = True
     settings = IML.Settings(rotation, scale, translate, gamma)
+    data_args = ['sc','gm']
 
     if 's' in sys.argv:
         if 'c' in sys.argv:
             create_patches_for_path(anno_path, settings)
-        shuffle_all_comb(base_save_path)
+        shuffle_all_comb(base_save_path, names = data_args)
+        exit()
 
     if 'a' in sys.argv:
         #base_save_path = sys.argv[sys.argv.index('p') + 1]
 
-        create_all_patches_comb(anno_path, base_save_path)
+        create_all_patches_comb(anno_path, base_save_path, names=data_args)
     else:
         create_patches_for_path(anno_path, settings)

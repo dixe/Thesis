@@ -58,6 +58,12 @@ class XmlImgsLoad(object):
             yield roi_img,xml
 
 
+    def get_imgs_roi(self, imgs_name):
+
+        for (img,xml) in self.get_all_img_iter(imgs_name):
+
+            yield self.XmlParser.get_roi(xml)
+
 
 class XmlParser(object):
 
@@ -181,6 +187,15 @@ def get_all_annotations(path):
                 annos += get_all_annotations_from_xml(root)
     return annos
 
+
+def get_all_roi(path):
+    rois = []
+    for r,ds,fs in os.walk(path):
+        for f in fs:
+            if f == IMG_META_XML_NAME:
+                loader = XmlImgsLoad(r)
+                rois +=loader.get_imgs_roi("all_impurites")
+    return rois
 
 def mkdir(dir_path):
 

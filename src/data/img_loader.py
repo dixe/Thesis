@@ -9,7 +9,7 @@ import sys
 
 IMG_META_XML_NAME = "Images Metadata Log.xml"
 
-PATCH_SIZE = 64
+PATCH_SIZE = 32
 PATCH_SIZE_HALF = PATCH_SIZE / 2
 OFFSET_RANGE = 5
 NUM_NON_BROKEN_PATHCES = 0
@@ -17,10 +17,11 @@ NUM_NON_BROKEN_PATHCES = 0
 
 class ImgLoad(object):
 
-    def __init__(self, name, path):
+    def __init__(self, name, path, settings):
         self.name = name
         self.frame, self.img_name = self.get_frame_name(name)
         self.path = path
+        self.settings = settings
 
         self.XmlParser = XmlParser(self.path  +'/' + IMG_META_XML_NAME, self.img_name, self.frame)
         self.valid = self.XmlParser.valid
@@ -60,16 +61,18 @@ class ImgLoad(object):
         if self.image == None:
             self.image = cv2.imread(self.path + '/' + self.name)
 
+
         return self.image
 
     def create_img_patches(self):
         if not self.valid:
             return [],[]
-        broken_patches = self.create_broken_patches()
-        non_broken_patches = self.create_non_broken_patches(len(broken_patches))
+        broken_patches, real_annos = self.create_broken_patches()
+
+        non_broken_patches = self.create_non_broken_patches(real_annos)
 
 
-        return broken_patches,non_broken_patches
+        return broken_patches, non_broken_patches
 
     def create_non_broken_patches(self, num_patches):
         if not self.valid:
@@ -82,26 +85,18 @@ class ImgLoad(object):
         i = 0
         x_min,y_min,x_max,y_max = self.get_roi()
 
-        img = self.img
         tries = 0
-
-
 
         while i < num_patches and tries < 1000:
 
             cx = rand.randint(x_min,x_max)
             cy = rand.randint(y_min,y_max)
 
-            if self.valid_non_broken_center(cx,cy,centers):
+            if self.valid_non_broken_center(cx, cy, centers):
                 centers.append((cx,cy))
-                angle = rand.randint(1,360)
-                patch = subimage(self.img(), (cx,cy), angle, PATCH_SIZE, PATCH_SIZE)
-                patches.append(patch)
+                patches += self.create_patches(cx,cy)
                 i +=1
             tries += 1
-
-
-
 
         return patches
 
@@ -127,22 +122,53 @@ class ImgLoad(object):
 
         return cx >= roi[0] and cx <= roi[2] and cy >= roi[1] and cy <= roi[3]
 
-    def create_broken_patches(self):
-        patches = []
-        for a in self.annotations:
+    def check_and_fix_roi(self, cx, cy, scale=1 ):
+        #TODO make do work
+        return cx,cy
 
+
+    def create_broken_patches(self):
+
+        patches = []
+        i = 0
+        for a in self.annotations:
             x_off = rand.randint(-OFFSET_RANGE,OFFSET_RANGE)
             y_off = rand.randint(-OFFSET_RANGE,OFFSET_RANGE)
             cx = a.center[0]# + x_off
             cy = a.center[1]# + y_off
-            img = self.img()
 
-            rotations = 6
-            if self.in_roi(cx,cy): # TODO fix this, so we just shift instead
-                for j in range(rotations):
-                    angle = rand.randint(1,360)
-                    patch = subimage(img, (cx,cy), angle, PATCH_SIZE, PATCH_SIZE)
-                    patches.append(patch)
+
+
+            cx, cy = self.check_and_fix_roi(cx,cy)
+            if not self.in_roi(cx, cy):
+                continue
+            i+=1
+
+            patches += self.create_patches(cx,cy)
+
+        return patches, i
+
+    def create_patches(self,cx,cy):
+
+        img = self.img()
+        patches = []
+
+
+
+        rots = range(0,90,10) if self.settings.rotation else [0]
+        scs = np.arange(0.8,1.4,0.2) if self.settings.scale else [1]
+        tls = range(-5,5,4) if self.settings.translate else [0]
+        gms = np.arange(0.6,1.5,0.4) if self.settings.gamma else [1]
+
+        for angle in rots: # rotation
+            for scale in scs: # scale
+                for tx in tls: # translate X
+                    for ty in tls: # translate Y
+                        for gm in gms: # gamma
+                            x, y = self.check_and_fix_roi(cx+tx, cy + ty)
+                            patch = subimage(img, (x,y), angle, scale, PATCH_SIZE, PATCH_SIZE)
+                            patch = adjust_gamma(patch,gm)
+                            patches.append(patch)
 
         return patches
 
@@ -238,6 +264,19 @@ class Annotation(object):
         self.center = (self.X, self.Y)
 
 
+
+def adjust_gamma(img, gamma):
+
+
+    invGamma = 1.0/ gamma
+
+    table = np.array([((i/255.0) ** invGamma) * 255
+                      for i in np.arange(0,256)]).astype("uint8")
+
+    return cv2.LUT(img,table)
+
+
+
 def get_all_annotations_from_xml(xml_root):
     annos = []
     for cs in xml_root.iter('circles'):
@@ -258,7 +297,20 @@ def get_all_annotations(path):
     return annos
 
 
-def subimage(image, center, theta, width, height):
+def subimage_sc(image, center, scale, width, height):
+
+
+    v_x = (1,0)
+    v_y = (0,1)
+    s_x = center[0] - v_x[0] * (width / 2) - v_y[0] * (height / 2)
+    s_y = center[1] - v_x[1] * (width / 2) - v_y[1] * (height / 2)
+
+    mapping = np.array([[scale * v_x[0], scale * v_y[0], s_x],
+                        [scale * v_x[1], scale * v_y[1], s_y]])
+
+    return cv2.warpAffine(image,mapping,(width, height),flags=cv2.WARP_INVERSE_MAP,borderMode=cv2.BORDER_REPLICATE)
+
+def subimage(image, center, theta, scale,  width, height):
    """
    Code from:
    http://stackoverflow.com/questions/11627362/how-to-straighten-a-rotated-rectangle-area-of-an-image-using-opencv-in-python
@@ -272,10 +324,20 @@ def subimage(image, center, theta, width, height):
    s_x = center[0] - v_x[0] * (width / 2) - v_y[0] * (height / 2)
    s_y = center[1] - v_x[1] * (width / 2) - v_y[1] * (height / 2)
 
-   mapping = np.array([[v_x[0],v_y[0], s_x],
-                        [v_x[1],v_y[1], s_y]])
+   mapping = np.array([[scale * v_x[0], scale * v_y[0], s_x],
+                        [scale * v_x[1], scale * v_y[1], s_y]])
 
    return cv2.warpAffine(image,mapping,(width, height),flags=cv2.WARP_INVERSE_MAP,borderMode=cv2.BORDER_REPLICATE)
+
+
+
+class Settings(object):
+
+    def __init__(self, rotation,scale, translate, gamma):
+        self.rotation = rotation
+        self.scale = scale
+        self.translate = translate
+        self.gamma = gamma
 
 if __name__ == "__main__":
 
