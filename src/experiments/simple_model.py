@@ -28,8 +28,6 @@ class simple_model(Base_network):
         
         model.load_weights(self.settings.save_weights_path)
 
-        
-
         return model
 
     def get_model(self):

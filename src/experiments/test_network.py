@@ -20,13 +20,15 @@ def visualize_model(net):
 
 def evaluate_model_ae(net):
     print "eval"
+
     model = net.get_model_test()
+
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
-        rs.validation_data_dir,
+        net.settnings.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
         batch_size=rs.nb_validation_samples,
         class_mode='binary')
@@ -46,50 +48,78 @@ def evaluate_model(net):
 
     from keras.preprocessing.image import ImageDataGenerator
     eval_datagen = ImageDataGenerator(rescale=1./255)
-
+    
     eval_generator = eval_datagen.flow_from_directory(
-        rs.validation_data_dir,
+        net.settings.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
         batch_size=32,
         class_mode='binary')
 
     res = model.evaluate_generator(
         eval_generator,
-        val_samples=rs.nb_validation_samples)
+        val_samples=rs.size_dict_val[net.settings.dataset]) 
 
     print res
     return res
 
 
-def evaluate_model_and_report(model):
+def evaluate_model_and_report(net):
+
     print "report"
+    model = net.get_model_test()
     from keras.preprocessing.image import ImageDataGenerator
+
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
+    dataset = "patches_rot" # net.settings.datasetf
+    eval_dir = "/home/ltm741/thesis/datasets/arg_data_sets_few_whole/{0}/validation".format(dataset)
+
     eval_generator = eval_datagen.flow_from_directory(
-        rs.validation_data_dir,
+        net.settings.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
-        batch_size=32,
-        class_mode='binary')
+        batch_size=rs.size_dict_val[dataset],
+        class_mode='binary',
+        shuffle = False) # With shuffel we cannot get the file names
 
-    res = model.predict_generator(
-        eval_generator,
-        val_samples=rs.nb_validation_samples)
-
-
+    eval_generator.next()
     file_names = eval_generator.filenames
 
-    print len(file_names) == len(res)
 
+    #print eval_generator.classes, len(eval_generator.classes)
+
+    target = eval_generator.classes
+    
     res_dict = {}
+ 
+    res = model.predict_generator(
+        eval_generator,
+        val_samples=rs.size_dict_val[dataset]) 
 
+    res = res.flatten()
+    res_int = np.array(map(round,res.flatten()))
+
+    
+    TP = len(np.where(np.logical_and(np.equal(res_int,0), np.equal( target, 0)))[0])
+    TN = len(np.where(np.logical_and(np.equal(res_int,1), np.equal( target, 1)))[0])
+    P = len(np.where(res_int == 0)[0])
+    N = len(np.where(res_int == 1)[0])
+
+    print TP, TN, P, N
+
+    print "acc = {0}".format((TP + TN) /(P+N*1.0))
+   
     for i in range(len(file_names)):
-        if not correct(file_names[i], float(res[i][0])):
-            res_dict[file_names[i]] = float(res[i][0])
+        name = "broken" if target[i] == 0 else "whole"
+        if not correct(name,res[i]):
+            res_dict[file_names[i]] = float(res[i])
 
     print len(res_dict)
-    #with open('simple_model_1.json','w+') as fp:
-     #   json.dump(res_dict,fp)
+    res_dict['dataset'] = net.settings.dataset
+
+    with open('simple_model_{0}.json'.format(net.settings.dataset),'w+') as fp:
+        json.dump(res_dict,fp)
+
+    print net.settings.validation_data_dir
 
     return res
 
@@ -134,30 +164,45 @@ def predict_img_path(path,net):
     cv2.imwrite("Predict.png",res_save[0])
 
 
-def find_error_images(net, imgs_path):
+def find_error_images(net):
 
     model = net.get_model_test()
 
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
+ 
+    print net.settings.validation_data_dir
 
     eval_generator = eval_datagen.flow_from_directory(
-        rs.validation_data_dir,
+        net.settings.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
-        batch_size=rs.nb_validation_samples,
-        class_mode='binary')
+        batch_size=rs.size_dict_val[net.settings.dataset],
+        class_mode='binary',
+        shuffle = False) # don't shuffle flow of images
+
 
     imgs = eval_generator.next()
-    x_eval = np.array(imgs[0])
 
+    print model.evaluate(imgs[0],imgs[1])
 
-    print imgs
+    cor = 0
+    print len(imgs[0])
+    for i in range(len(imgs[0])):
+        name = "broken" if imgs[1][i] == 0 else "whole"
+        pred = model.predict(np.array([imgs[0][i]]))
+        if correct(name, pred):
+            cor += 1
+    print cor,"acc = " + str(cor/ (1.0 * len(imgs[0])))
+    
+    
+        
+        
 
 
 
 def correct(name, pred):
-    if name.startswith("broken"):
+    if name.startswith("broken"): 
         return pred < 0.5
     else:
         return pred >= 0.5
@@ -191,6 +236,8 @@ if __name__ == "__main__":
     if 'wei' in sys.argv:
         callback = visualize_weights
 
+    if 'imgs_errors' in sys.argv:
+        callback = find_error_images
 
 
     sys.argv = filter(lambda x : x != '',sys.argv )
@@ -205,8 +252,7 @@ if __name__ == "__main__":
         callback = fun
 
     if 'imgs_errors' in sys.argv:
-        fun = lambda net : predict_img_path(path, net)
-        callback = fun
+        callback = find_error_images
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
