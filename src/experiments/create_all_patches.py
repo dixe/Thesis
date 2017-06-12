@@ -33,10 +33,16 @@ def in_roi(i,j,s,w):
 
 
 
+def get_arg_from_sysargv(arg_name):
+    if arg_name not in sys.argv:
+        return Non
+
+    index = sys.argv.index(arg_name)
+    return sys.argv[index + 1]
 
 if __name__ == "__main__":
 
-    img_name = sys.argv[1]
+    img_name = get_arg_from_sysargv('img')
     img = np.array([img_to_array(load_img(img_name))])
 
     print "Start create"
