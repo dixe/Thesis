@@ -40,14 +40,14 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 1):
             if patch.shape == (1,3,window_size,window_size):
 
                 pred = model.predict(patch)
-                if pred <= 0.5:
+                if pred >= 0.5:
                     preds.append(pred)
                     #print preds[-1], i*stride, j*stride
                     res_img[i*stride + window_size/2, j*stride+window_size/2,:] = np.array([0,255,42])
                     #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
                     c +=1
                     #print i*stride, j*stride
-    
+     
     cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)                    
     print sum(preds)
 
@@ -123,7 +123,8 @@ if __name__ == "__main__":
         img_name = get_arg_from_sysargv('img')
         img = np.array([img_to_array(load_img(img_name))])
         model = net.get_model_test()
-        predict_img(model, img, 'pred.png', ".")
+
+        predict_img(model, img, img_name, ".", net.settings.img_width)
         exit()
 
     test_simple(net)
