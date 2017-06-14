@@ -143,41 +143,47 @@ def tile_raster_images(X, img_shape, tile_shape, tile_spacing=(0, 0),
 
 
 def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
-    out_shape    = [0,0]
-    out_shape[0] = (img_shape[0]+tile_spacing[0])*tile_shape[0] - tile_spacing[0]
-    out_shape[1] = (img_shape[1]+tile_spacing[1])*tile_shape[1] - tile_spacing[1]
 
-    imgs = len(weights[0])
+    imgs = len(weights)
 
-    cols = int(np.sqrt(imgs))
+    print imgs
+
+    cols = int(np.round(np.sqrt(imgs)))
 
     rows = imgs/cols
+
+    rows = rows + (imgs - rows * cols)
 
     out_img = np.zeros((rows * img_shape[0] * tile_shape[0], cols * img_shape[1] * tile_shape[1],3))
 
     out_img = np.zeros((cols * img_shape[0] * tile_shape[0] + cols * tile_spacing[0] + tile_spacing[0] , rows * img_shape[1]  * tile_shape[1]+ rows * tile_spacing[1] + tile_spacing[1] ,3))
 
-    for i in range(imgs):
+    for row in range(rows):
 
-        filteri = np.zeros((img_shape[0] * tile_shape[0], img_shape[1] * tile_shape[1] ,3))
+        for col in range(cols):
+            i = row *cols + col
+            if i >= imgs:
+                break
 
-        for h in range(len(weights[i])):
-            for j in range(len(weights[i][0])):
-                filteri[h * tile_shape[0]: h  * tile_shape[0] + tile_shape[0],
-                        j * tile_shape[1]: j  * tile_shape[1] +  tile_shape[1]] = weights[i,h,j,:]
+            filteri = np.zeros((img_shape[0] * tile_shape[0], img_shape[1] * tile_shape[1] ,3))
 
 
-        col = int(i / rows)
 
-        offseti = i*img_shape[1] *tile_shape[1] + tile_spacing[1] * i + tile_shape[1] * img_shape[1]
+            for h in range(len(weights[i])):
+                for j in range(len(weights[i][0])):
+                    filteri[h * tile_shape[0]: h  * tile_shape[0] + tile_shape[0],
+                            j * tile_shape[1]: j  * tile_shape[1] +  tile_shape[1]] = weights[i,h,j,:]
 
-        offsetcol = col*img_shape[0] *tile_shape[0] + tile_spacing[0] * col + tile_shape[0] * img_shape[0]
 
-        #print filteri.shape
 
-        out_img[tile_spacing[1] + col *img_shape[0]*tile_shape[0] + col * tile_spacing[1]: offsetcol + tile_spacing[0], tile_spacing[1]+i  *img_shape[1]*tile_shape[1] + i * tile_spacing[1] : offseti + tile_spacing[1]] = filteri
+            offsetrow = row*img_shape[1] *tile_shape[1] + tile_spacing[1] * row + tile_shape[1] * img_shape[1]
 
-    print out_img.shape
+            offsetcol = col*img_shape[0] *tile_shape[0] + tile_spacing[0] * col + tile_shape[0] * img_shape[0]
+
+
+            out_img[tile_spacing[1] + col *img_shape[0]*tile_shape[0] + col * tile_spacing[1]: offsetcol + tile_spacing[0], tile_spacing[1]+row *img_shape[1]*tile_shape[1] + row* tile_spacing[1] : offsetrow + tile_spacing[1]] = filteri
+
+
 
     return out_img
 
@@ -195,10 +201,18 @@ if __name__ == "__main__":
          [[255,0,0],[022,0,0], [128,128,128]],
          [ [255,255,0],[022,0,0], [128,128,128]]],
 
+        [[[220,0,0],[0,220,0], [128,128,128]],
+         [[255,0,0],[022,0,20], [128,128,128]],
+         [ [3,255,0],[022,0,200], [128,128,128]]],
+
+        [[[220,0,0],[0,220,0], [128,128,128]],
+         [[255,0,0],[022,255,20], [128,128,128]],
+         [ [3,255,0],[022,0,200], [128,128,128]]],
+
+
         [[[255,255,255],[110,0,0], [128,128,128]],
          [[255,0,0],[0,0,220], [128,128,128]],
          [[255,255,0],[220,0,0], [128,128,128]]]])
-
 
     out_img = tile_raster_color(X,(3,3), (10,10),(1,1))
     cv2.imwrite("out.png", out_img)
