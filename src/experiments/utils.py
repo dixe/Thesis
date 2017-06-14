@@ -142,7 +142,22 @@ def tile_raster_images(X, img_shape, tile_shape, tile_spacing=(0, 0),
 
 
 
+def normalize_to_pixel_vals(weights):
+
+    for i in range(len(weights)):
+        weights[i] +=  np.min(weights[i])
+        weights[i] /= np.max(weights[i])
+        weights[i] *= 255
+
+    return weights
+
+
+
+
+
+
 def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
+    weights = normalize_to_pixel_vals(weights)
 
     imgs = len(weights)
 
@@ -193,13 +208,14 @@ def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
 if __name__ == "__main__":
 
     X = np.array([
-        [[[255,255,255],[200,20,220], [128,128,128]],
-         [[255,255,255],[220,220,220], [128,128,128]],
-         [[255,255,255],[220,220,220], [128,128,128]]],
+        [[[0.5,0.1,2],[20,0,20], [12,-8,8]],
+         [[2,2,2],[0,0,20], [1,1,1]],
+         [[2,2,5],[2,20,20], [18,8,18]]],
 
-        [[[0,0,0],[0,220,0], [128,128,128]],
-         [[255,0,0],[022,0,0], [128,128,128]],
-         [ [255,255,0],[022,0,0], [128,128,128]]],
+
+        [[[0,0,0],[0,20,0], [128,1,1]],
+         [[255,0,0],[022,0,0], [128,28,128]],
+         [ [255,255,0],[022,0,0], [12,8,28]]],
 
         [[[220,0,0],[0,220,0], [128,128,128]],
          [[255,0,0],[022,0,20], [128,128,128]],
