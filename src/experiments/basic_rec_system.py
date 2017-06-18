@@ -8,7 +8,7 @@ import cv2
 from keras.preprocessing.image import load_img, img_to_array
 
 
-def predict_img(model, img, img_name, root, window_size = 64, stride = 1):
+def predict_img(model, img, img_name, root, window_size = 64, stride = 3):
 
     strides_x = len(img[0][0]) / stride
     strides_y = len(img[0][0][0])/ stride
@@ -27,30 +27,58 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 1):
 
     c = 0
 
-    for i in range(strides_x):
-        for j in range(strides_y):
+    patches, cords = create_img_patches(img, window_size, stride)
+    print patches.shape
+    print "Starting pred"
+
+    preds = model.predict(patches)
+
+    print "Finished preds"
+
+    print preds.shape, strides_x*strides_y
+
+
+    if len(cords) != len(preds):
+        print "Coordinates and prediction shape does not match"
+        exit()
+
+    for i in range(len(cords)):
         
-            if not in_roi(i,j,stride, window_size):
-                #print i*stride, j*stride
-                continue
-
-            patch = img[:,:,i*stride:i*stride + window_size, j*stride:j*stride+window_size]
-                
-
-            if patch.shape == (1,3,window_size,window_size):
-
-                pred = model.predict(patch)
-                if pred >= 0.5:
-                    preds.append(pred)
-                    #print preds[-1], i*stride, j*stride
-                    res_img[i*stride + window_size/2, j*stride+window_size/2,:] = np.array([0,255,42])
-                    #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
-                    c +=1
-                    #print i*stride, j*stride
+        if preds[i] <= 0.5:
+            x,y = cords[i]
+            #print preds[-1], i*stride, j*stride
+            res_img[x,y,:] = np.array([0,255,42])
+            #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
      
     cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)                    
     print sum(preds)
 
+
+
+
+def create_img_patches(img, window_size, stride):
+
+    strides_x = len(img[0][0]) / stride
+    strides_y = len(img[0][0][0])/ stride
+
+
+    patches = []
+    cords = []
+    c = 0
+    for i in range(strides_x):
+        for j in range(strides_y):
+            if not in_roi(i,j,stride, window_size):
+                continue
+
+            patch = img[:,:,i*stride:i*stride + window_size, j*stride:j*stride+window_size]
+
+            if patch.shape == (1,3,window_size,window_size):
+                patches.append(patch)
+                cords.append((i*stride + window_size/2, j*stride+window_size/2))
+                
+    patches = np.squeeze(np.array(patches))
+    cords = np.array(cords)
+    return patches, cords
 
 
 
@@ -111,7 +139,34 @@ def test_simple(net):
                 predict_img(model, img, f, r)
 
 
+def run_all_settings():
+    
+
+    img_name = get_arg_from_sysargv('img')
+    img = np.array([img_to_array(load_img(img_name))])
+
+    print img_name
+    settings = ws.get_settings_model_name("")
+
+    for s in settings:
+        print s[0]
+
+        setting = ws.get_settings(s[0])
+
+        net = sm.get_net(setting)
+        model = net.get_model_test()
+        
+        dataset_n = net.settings.validation_data_dir.split('/')[-2]
+        
+        predict_img(model, img, dataset_n, ".", net.settings.img_width)
+
+
 if __name__ == "__main__":
+
+
+    if 'all' in sys.argv and 'img' in sys.argv:
+        run_all_settings()
+        exit()
 
     settings = get_settings_from_sysarg()
 
@@ -123,8 +178,11 @@ if __name__ == "__main__":
         img_name = get_arg_from_sysargv('img')
         img = np.array([img_to_array(load_img(img_name))])
         model = net.get_model_test()
+        
+        dataset_n = net.settings.validation_data_dir.split('/')[-2]
 
-        predict_img(model, img, img_name, ".", net.settings.img_width)
+        predict_img(model, img, dataset_n, ".", net.settings.img_width)
         exit()
+
 
     test_simple(net)

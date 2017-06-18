@@ -145,10 +145,11 @@ def tile_raster_images(X, img_shape, tile_shape, tile_spacing=(0, 0),
 def normalize_to_pixel_vals(weights):
 
     for i in range(len(weights)):
-        weights[i] +=  np.min(weights[i])
+    
+        weights[i] -= np.min(weights[i])
         weights[i] /= np.max(weights[i])
         weights[i] *= 255
-
+    
     return weights
 
 
@@ -161,7 +162,6 @@ def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
 
     imgs = len(weights)
 
-    print imgs
 
     cols = int(np.round(np.sqrt(imgs)))
 

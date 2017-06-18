@@ -37,7 +37,10 @@ def evaluate_model_ae(net):
     x_eval = np.array(imgs[0])
 
     res = model.evaluate(x_eval, x_eval)
+
+    print model.metrics_names
     print res
+
     return res
 
 def evaluate_model(net):
@@ -51,7 +54,7 @@ def evaluate_model(net):
     
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
-        target_size=(rs.img_height, rs.img_width),
+        target_size=(net.settings.img_height, net.settings.img_width),
         batch_size=32,
         class_mode='binary')
 
@@ -59,6 +62,7 @@ def evaluate_model(net):
         eval_generator,
         val_samples=rs.size_dict_val[net.settings.dataset]) 
 
+    print model.metrics_names
     print res
     return res
 
@@ -71,13 +75,10 @@ def evaluate_model_and_report(net):
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
 
-    dataset = "patches_rot" # net.settings.datasetf
-    eval_dir = "/home/ltm741/thesis/datasets/arg_data_sets_few_whole/{0}/validation".format(dataset)
-
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
-        target_size=(rs.img_height, rs.img_width),
-        batch_size=rs.size_dict_val[dataset],
+        target_size=(net.settings.img_height, net.settings.img_width),
+        batch_size=rs.size_dict_val[net.settings.dataset],
         class_mode='binary',
         shuffle = False) # With shuffel we cannot get the file names
 
@@ -93,7 +94,7 @@ def evaluate_model_and_report(net):
  
     res = model.predict_generator(
         eval_generator,
-        val_samples=rs.size_dict_val[dataset]) 
+        val_samples=rs.size_dict_val[net.settings.dataset])
 
     res = res.flatten()
     res_int = np.array(map(round,res.flatten()))
@@ -123,25 +124,53 @@ def evaluate_model_and_report(net):
 
     return res
 
-def visualize_weights(net):
+def visualize_weights(net, layer=0):
 
-    model = net.get_model_train()
+    model = net.get_model_test()
 
-    layer = 2
     weights = model.layers[layer].get_weights()
 
-    print weights[0].shape
 
-    raster = ut.tile_raster_images(
-        X=weights[0][0:3].reshape((32*3,3*3)),
+    img = ut.tile_raster_color(
+        weights[0],
         img_shape=(3,3), tile_shape=(10,10),
         tile_spacing=(1,1))
 
-    print raster
 
-    image = Image.fromarray(raster)
-    image.save('filter_layer_{0}.png'.format(layer))
+    cv2.imwrite('{0}_layer_{1}.png'.format(net.settings.dataset, layer), img)
 
+def visualize_all_weights():
+
+    settings = ws.get_settings_model_name("")
+
+    for s in settings:
+
+        setting = ws.get_settings(s[0])
+
+        net = sm.get_net(setting)
+        for l in [0,2,4]:
+            print l
+            visualize_weights(net,l)        
+
+
+
+def evaluate_all_models():
+
+    model_name = 'simple_model'
+    settings = ws.get_settings_model_name(model_name)
+
+    with open("eval_all_{0}.txt".format(model_name), 'a') as f:
+        f.write("dataset, loss, acc, recall, precision\n")
+    
+    for s in settings:
+        setting = ws.get_settings(s[0])
+
+        net = sm.get_net(setting)
+
+        loss, acc, recall, precision = evaluate_model(net)
+        with open("eval_all_{0}.txt".format(model_name), 'a') as f:
+            f.write("{0}, {1}, {2}, {3}, {4}\n".format(net.settings.dataset,loss, acc, recall, precision))
+    
 
 def predict_img_path(path,net):
 
@@ -226,6 +255,9 @@ if __name__ == "__main__":
         exit()
 
 
+    if 'evala' in sys.argv:
+        callback = evaluate_all_models
+    
     if 'vis' in sys.argv:
         callback = visualize_model
 
@@ -235,6 +267,9 @@ if __name__ == "__main__":
 
     if 'wei' in sys.argv:
         callback = visualize_weights
+
+    if 'weia' in sys.argv:
+        callback = visualize_all_weights
 
     if 'imgs_errors' in sys.argv:
         callback = find_error_images
@@ -266,7 +301,9 @@ if __name__ == "__main__":
 
     elif 'sm' in sys.argv: # simple_model.py
         import simple_model as sm
-
+        if settings is None:
+            callback()
+            exit()
         net = sm.get_net(settings)
         callback(net)
 

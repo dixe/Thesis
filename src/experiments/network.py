@@ -39,7 +39,7 @@ class Base_network(object):
 
 
 
-    def get_session(self, gpu_fraction=0.5):
+    def get_session(self, gpu_fraction=0.3):
         """
         With 8 gb of ram, use ~4 gb
         """
