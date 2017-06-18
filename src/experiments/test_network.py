@@ -14,6 +14,7 @@ except ImportError:
 
 def visualize_model(net):
     from keras.utils.visualize_util import plot
+    model = net.get_model_test()
 
     plot(model, to_file= sys.argv[2]+'.png')
 
