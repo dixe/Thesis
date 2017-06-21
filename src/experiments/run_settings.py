@@ -18,13 +18,13 @@ size_dict_val = {"patches" : 303, 'patches_gm':  910, 'patches_tl' : 2724, 'patc
 auto_enc = False
 
 
-dataset_name = 'auto_encoder_all_patches' if auto_enc else 'patches'
+dataset_name = 'auto_encoder_all_patches' if auto_enc else 'patches_gm'
 
-train_data_dir_base ="/home/ltm741/thesis/datasets/arg_data_sets_few_whole_32/{0}/train/"
+train_data_dir_base ="/home/ltm741/thesis/datasets/arg_data_sets_few_whole/{0}/train/"
 train_data_dir = train_data_dir_base.format(dataset_name)
 
 
-val_data_dir_base = "/home/ltm741/thesis/datasets/arg_data_sets_few_whole_32/{0}/validation"
+val_data_dir_base = "/home/ltm741/thesis/datasets/arg_data_sets_few_whole/{0}/validation"
 validation_data_dir = val_data_dir_base.format(dataset_name)
 
 #eval_data_dir = "/home/ltm741/thesis/datasets/{0}/validation".format(dataset_name)
@@ -39,7 +39,7 @@ settings_folder = "settings/"
 #img_width = 280
 #img_height = 176
 
-img_width = 32
+img_width = 32 if '32' in dataset_name else 64
 img_height = img_width
 
 nb_validation_samples = size_dict_val[dataset_name]

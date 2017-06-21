@@ -1,6 +1,6 @@
 import keras
 import sys
-import ws
+import Weightstore as ws
 
 class EarlyStoppingByLossVal(keras.callbacks.Callback):
     def __init__(self, dataset, settings):

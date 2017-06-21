@@ -79,7 +79,7 @@ class Base_network(object):
             class_mode='binary')
 
 
-        stop_callback = mcb.EarlyStoppingByLossVal(self.settings.dataset)
+        stop_callback = mcb.EarlyStoppingByLossVal(self.settings.dataset, self.settings)
         # fine-tune the model
         history = model.fit_generator(
             train_generator,

@@ -71,7 +71,7 @@ def store_settings(settings, model, history):
     val_acc = -1
     val_loss = -1
 
-    if history not is None:
+    if history is not None:
         loss = history['loss'][-1]
         acc = history['acc'][-1]
         val_acc = history['val_acc'][-1]

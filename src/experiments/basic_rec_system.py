@@ -5,10 +5,18 @@ import run_settings as rs
 import simple_model as sm
 import Weightstore as ws
 import cv2
+from timeit import default_timer as timer
 from keras.preprocessing.image import load_img, img_to_array
 
 
-def predict_img(model, img, img_name, root, window_size = 64, stride = 3):
+total_pred_time = 0
+total_gen_time = 0
+
+def predict_img(model, img, img_name, root, window_size = 64, stride = 4):
+
+
+    global total_pred_time
+    global total_gen_time
 
     strides_x = len(img[0][0]) / stride
     strides_y = len(img[0][0][0])/ stride
@@ -26,14 +34,21 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 3):
 
 
     c = 0
-
+    
+    start = timer()
     patches, cords = create_img_patches(img, window_size, stride)
-    print patches.shape
+    end = timer()
+
+    total_gen_time += end-start
+
+    print "time to create data", end -start, patches.shape
     print "Starting pred"
 
+    start = timer()
     preds = model.predict(patches)
-
-    print "Finished preds"
+    end =  timer()
+    total_pred_time += end-start
+    print "Finished preds in", end - start
 
     print preds.shape, strides_x*strides_y
 
@@ -140,7 +155,8 @@ def test_simple(net):
 
 
 def run_all_settings():
-    
+    global total_pred_time
+    global total_gen_time    
 
     img_name = get_arg_from_sysargv('img')
     img = np.array([img_to_array(load_img(img_name))])
@@ -153,6 +169,7 @@ def run_all_settings():
 
         setting = ws.get_settings(s[0])
 
+
         net = sm.get_net(setting)
         model = net.get_model_test()
         
@@ -160,6 +177,11 @@ def run_all_settings():
         
         predict_img(model, img, dataset_n, ".", net.settings.img_width)
 
+    avg_gen_time = total_gen_time / (1.0*len(settings))
+    print "avg gen time", avg_gen_time
+
+    avg_pred_time = total_pred_time / (1.0*len(settings))
+    print "avg pred time", avg_pred_time
 
 if __name__ == "__main__":
 
