@@ -66,10 +66,16 @@ def store_settings(settings, model, history):
     with open(name, 'w+') as fp:
         json.dump(settings.get_dict(),fp)
 
-    loss = history['loss'][-1]
-    acc = history['acc'][-1]
-    val_acc = history['val_acc'][-1]
-    val_loss = history['val_loss'][-1]
+    loss = -1
+    acc = -1
+    val_acc = -1
+    val_loss = -1
+
+    if history not is None:
+        loss = history['loss'][-1]
+        acc = history['acc'][-1]
+        val_acc = history['val_acc'][-1]
+        val_loss = history['val_loss'][-1]
 
     conn = get_db_conn()
 

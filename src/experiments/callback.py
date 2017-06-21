@@ -1,12 +1,13 @@
 import keras
 import sys
-
+import ws
 
 class EarlyStoppingByLossVal(keras.callbacks.Callback):
-    def __init__(self, dataset):
+    def __init__(self, dataset, settings):
         super(keras.callbacks.Callback, self).__init__()
         self.losses = []
         self.dataset = dataset
+        self.settings = settings
         self.val_losses = []
         self.lowest_eval = 1000000 # no eval error should be lager than this
         self.best_weight = None
@@ -18,6 +19,9 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
 
         EPOCH_MAX = 100
 
+        if epoch % 3 == 0:
+            self.store_weights()
+
         cur_eval_loss = logs.get('val_loss')
 
         # store best eval loss weights
@@ -28,9 +32,9 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
         self.losses.append(logs.get('val_loss'))
         self.val_losses.append(cur_eval_loss)
 
-        
+
         #self.glt_stop(self.lowest_eval, cur_eval_loss, epoch)
-        
+
         self.pqt_stop(self.lowest_eval, cur_eval_loss, epoch,
                       logs.get('loss'), logs.get('acc'), logs.get('val_loss'), logs.get('val_acc'))
 
@@ -38,12 +42,18 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
         if epoch > EPOCH_MAX:
             self.model.stop_training = True
             self.model.set_weights(self.best_weight)
-        
+
+
+    def store_weights(self):
+
+        self.model.save_weights(self.settings.save_weights_path)
+        ws.store_settings(self.settings, self.model, None)
+
 
     def pqt_stop(self, eopt, evat, epoch, train_loss, train_acc, val_loss, val_acc):
 
         PQNUM = 3
-        
+
         k = 5
 
         loss_inv = self.losses[max(epoch-k+1,0) : epoch+1]
@@ -53,7 +63,7 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
         glt = 100 * (evat / (1.0 * eopt) - 1)
 
         pqt = (1.0* glt) / pkt
-        
+
         store_string = self.store_string.format(epoch, "pqt", pqt, train_loss, train_acc, val_loss, val_acc)
         with open('pqt_{0}.csv'.format(self.dataset), 'a') as pqt_f:
             pqt_f.write(store_string)
@@ -81,7 +91,7 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
             self.model.stop_training = True
             self.model.set_weights(self.best_weight)
 
-    
+
 
 
 class Stop_callback(keras.callbacks.Callback):
