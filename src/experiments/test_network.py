@@ -51,7 +51,10 @@ def evaluate_model(net):
     model = net.get_model_test()
 
     from keras.preprocessing.image import ImageDataGenerator
-    eval_datagen = ImageDataGenerator(rescale=1./255)
+    eval_datagen = ImageDataGenerator(
+        samplewise_center = self.settings.sample_mean,
+        samplewise_std_normalization= self.settings.sample_std,
+        rescale=1./255)
     
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
@@ -74,7 +77,10 @@ def evaluate_model_and_report(net):
     model = net.get_model_test()
     from keras.preprocessing.image import ImageDataGenerator
 
-    eval_datagen = ImageDataGenerator(rescale=1./255)
+    eval_datagen = ImageDataGenerator(
+        samplewise_center = self.settings.sample_mean,
+        samplewise_std_normalization= self.settings.sample_std,
+        rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
@@ -200,7 +206,10 @@ def find_error_images(net):
 
     from keras.preprocessing.image import ImageDataGenerator
 
-    eval_datagen = ImageDataGenerator(rescale=1./255)
+    eval_datagen = ImageDataGenerator(
+        samplewise_center = self.settings.sample_mean,
+        samplewise_std_normalization= self.settings.sample_std,
+        rescale=1./255)
  
     print net.settings.validation_data_dir
 
