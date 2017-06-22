@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 from keras.preprocessing.image import load_img, img_to_array
 import utils as ut
+from keras import backend as K
 
 try:
     import PIL.Image as Image
@@ -52,7 +53,7 @@ def evaluate_model(net):
 
     from keras.preprocessing.image import ImageDataGenerator
     eval_datagen = ImageDataGenerator(rescale=1./255)
-    
+
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
         target_size=(net.settings.img_height, net.settings.img_width),
@@ -61,7 +62,7 @@ def evaluate_model(net):
 
     res = model.evaluate_generator(
         eval_generator,
-        val_samples=rs.size_dict_val[net.settings.dataset]) 
+        val_samples=rs.size_dict_val[net.settings.dataset])
 
     print model.metrics_names
     print res
@@ -90,9 +91,9 @@ def evaluate_model_and_report(net):
     #print eval_generator.classes, len(eval_generator.classes)
 
     target = eval_generator.classes
-    
+
     res_dict = {}
- 
+
     res = model.predict_generator(
         eval_generator,
         val_samples=rs.size_dict_val[net.settings.dataset])
@@ -100,7 +101,7 @@ def evaluate_model_and_report(net):
     res = res.flatten()
     res_int = np.array(map(round,res.flatten()))
 
-    
+
     TP = len(np.where(np.logical_and(np.equal(res_int,0), np.equal( target, 0)))[0])
     TN = len(np.where(np.logical_and(np.equal(res_int,1), np.equal( target, 1)))[0])
     P = len(np.where(res_int == 0)[0])
@@ -109,7 +110,7 @@ def evaluate_model_and_report(net):
     print TP, TN, P, N
 
     print "acc = {0}".format((TP + TN) /(P+N*1.0))
-   
+
     for i in range(len(file_names)):
         name = "broken" if target[i] == 0 else "whole"
         if not correct(name,res[i]):
@@ -140,6 +141,23 @@ def visualize_weights(net, layer=0):
 
     cv2.imwrite('{0}_layer_{1}.png'.format(net.settings.dataset, layer), img)
 
+
+def visualize_layer(net, layer):
+    model = net.get_model_test()
+
+    activations = get_activations(model, layer)
+
+    print type(activations)
+
+
+
+
+def get_activations(model, layer, X_batch):
+    get_activations = K.function([model.layers[0].input, K.learning_phase()], model.layers[layer].output)
+    activations = get_activations([X_batch,0])
+    return activations
+
+
 def visualize_all_weights():
 
     settings = ws.get_settings_model_name("")
@@ -151,7 +169,7 @@ def visualize_all_weights():
         net = sm.get_net(setting)
         for l in [0,2,4]:
             print l
-            visualize_weights(net,l)        
+            visualize_weights(net,l)
 
 
 
@@ -162,7 +180,7 @@ def evaluate_all_models():
 
     with open("eval_all_{0}.txt".format(model_name), 'a') as f:
         f.write("dataset, loss, acc, recall, precision\n")
-    
+
     for s in settings:
         setting = ws.get_settings(s[0])
 
@@ -171,7 +189,7 @@ def evaluate_all_models():
         loss, acc, recall, precision = evaluate_model(net)
         with open("eval_all_{0}.txt".format(model_name), 'a') as f:
             f.write("{0}, {1}, {2}, {3}, {4}\n".format(net.settings.dataset,loss, acc, recall, precision))
-    
+
 
 def predict_img_path(path,net):
 
@@ -201,7 +219,7 @@ def find_error_images(net):
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(rescale=1./255)
- 
+
     print net.settings.validation_data_dir
 
     eval_generator = eval_datagen.flow_from_directory(
@@ -224,15 +242,15 @@ def find_error_images(net):
         if correct(name, pred):
             cor += 1
     print cor,"acc = " + str(cor/ (1.0 * len(imgs[0])))
-    
-    
-        
-        
+
+
+
+
 
 
 
 def correct(name, pred):
-    if name.startswith("broken"): 
+    if name.startswith("broken"):
         return pred < 0.5
     else:
         return pred >= 0.5
@@ -258,7 +276,7 @@ if __name__ == "__main__":
 
     if 'evala' in sys.argv:
         callback = evaluate_all_models
-    
+
     if 'vis' in sys.argv:
         callback = visualize_model
 
@@ -275,6 +293,11 @@ if __name__ == "__main__":
     if 'imgs_errors' in sys.argv:
         callback = find_error_images
 
+    if 'vl' in sys.argv:
+        layer = 0
+        fun = lambda model : visualize_layer(model, layer)
+        callback = fun
+
 
     sys.argv = filter(lambda x : x != '',sys.argv )
     guid_substring = sys.argv[-1]
@@ -289,6 +312,9 @@ if __name__ == "__main__":
 
     if 'imgs_errors' in sys.argv:
         callback = find_error_images
+
+
+
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
