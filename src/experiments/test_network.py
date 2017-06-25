@@ -54,8 +54,8 @@ def evaluate_model(net):
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(
-        samplewise_center = self.settings.sample_mean,
-        samplewise_std_normalization= self.settings.sample_std,
+        samplewise_center = net.settings.sample_mean,
+        samplewise_std_normalization = net.settings.sample_std,
         rescale=1./255)
     
     eval_generator = eval_datagen.flow_from_directory(
@@ -80,8 +80,8 @@ def evaluate_model_and_report(net):
     from keras.preprocessing.image import ImageDataGenerator
 
     eval_datagen = ImageDataGenerator(
-        samplewise_center = self.settings.sample_mean,
-        samplewise_std_normalization= self.settings.sample_std,
+        samplewise_center = net.settings.sample_mean,
+        samplewise_std_normalization = net.settings.sample_std,
         rescale=1./255)
 
     eval_generator = eval_datagen.flow_from_directory(
@@ -150,9 +150,29 @@ def visualize_weights(net, layer=0):
 
 
 def visualize_layer(net, layer):
+    from keras.preprocessing.image import ImageDataGenerator
     model = net.get_model_test()
 
-    activations = get_activations(model, layer)
+
+    
+
+    eval_datagen = ImageDataGenerator(
+        samplewise_center = net.settings.sample_mean,
+        samplewise_std_normalization= net.settings.sample_std,
+        rescale=1./255)
+    
+    eval_generator = eval_datagen.flow_from_directory(
+        #net.settings.validation_data_dir,
+        target_size=(rs.img_height, rs.img_width),
+        batch_size=rs.size_dict_val[net.settings.dataset],
+        class_mode='binary',
+        shuffle = False) # don't shuffle flow of images
+
+    batch = eval_generator.next()
+
+    print batch.shape
+
+    activations = get_activations(model, layer, batch)
 
     print type(activations)
 
@@ -227,10 +247,10 @@ def find_error_images(net):
 
 
     eval_datagen = ImageDataGenerator(
-        samplewise_center = self.settings.sample_mean,
-        samplewise_std_normalization= self.settings.sample_std,
+        samplewise_center = net.settings.sample_mean,
+        samplewise_std_normalization = net.settings.sample_std,
         rescale=1./255)
-   print net.settings.validation_data_dir
+    print net.settings.validation_data_dir
 
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
