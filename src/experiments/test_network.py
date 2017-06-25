@@ -57,7 +57,7 @@ def evaluate_model(net):
         samplewise_center = net.settings.sample_mean,
         samplewise_std_normalization = net.settings.sample_std,
         rescale=1./255)
-    
+
     eval_generator = eval_datagen.flow_from_directory(
         net.settings.validation_data_dir,
         target_size=(net.settings.img_height, net.settings.img_width),
@@ -154,17 +154,16 @@ def visualize_layer(net, layer):
     model = net.get_model_test()
 
 
-    
+
 
     eval_datagen = ImageDataGenerator(
         samplewise_center = net.settings.sample_mean,
         samplewise_std_normalization= net.settings.sample_std,
         rescale=1./255)
-    
+
     eval_generator = eval_datagen.flow_from_directory(
-        #net.settings.validation_data_dir,
+        "/home/ltm741/thesis/datasets/arg_data_sets_few_whole/patches_1/validation/", #net.settings.validation_data_dir,
         target_size=(rs.img_height, rs.img_width),
-        batch_size=rs.size_dict_val[net.settings.dataset],
         class_mode='binary',
         shuffle = False) # don't shuffle flow of images
 
