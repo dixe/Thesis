@@ -13,6 +13,8 @@ try:
 except ImportError:
     import Image
 
+layer_dir = "layer_viz"
+
 def visualize_model(net):
     from keras.utils.visualize_util import plot
     model = net.get_model_test()
@@ -140,20 +142,23 @@ def visualize_weights(net, layer=0):
     weights = model.layers[layer].get_weights()
 
 
+    print weights[0].shape[-1]
+
+    img_size = weights[0].shape[-1]
+
     img = ut.tile_raster_color(
         weights[0],
-        img_shape=(3,3), tile_shape=(10,10),
+        img_shape=(img_size,img_size), tile_shape=(10,10),
         tile_spacing=(1,1))
 
+    guid = str(net.settings.guid)[-7:-1]
 
-    cv2.imwrite('{0}_layer_{1}.png'.format(net.settings.dataset, layer), img)
+    cv2.imwrite('{0}_{1}_layer_{2}.png'.format(guid, net.settings.dataset, layer), img)
 
 
-def visualize_layer(net, layer):
+def visualize_layer(net, layer, img_num = 0):
     from keras.preprocessing.image import ImageDataGenerator
     model = net.get_model_test()
-
-
 
 
     eval_datagen = ImageDataGenerator(
@@ -169,18 +174,47 @@ def visualize_layer(net, layer):
 
     batch = eval_generator.next()
 
-    print batch.shape
 
-    activations = get_activations(model, layer, batch)
+    img_size = len(batch[0][0][0])
 
-    print type(activations)
+    print img_size
+
+
+
+    input_orig = np.array([batch[0][img_num]])
+
+    print input_orig.shape
+
+    orig = ut.tile_raster_color(
+        input_orig,
+        img_shape=(img_size,img_size), tile_shape=(1,1),
+        tile_spacing=(0,0))
+
+
+    activations = get_activations(model, layer, batch)[0]
+
+
+    # just take one of the images
+    imgs = ut.visualize_layer(activations[img_num])
+    
+
+    for i in range(len(imgs)):
+        cv2.imwrite('{0}/{1}_layer_{2}_{3}.png'.format(layer_dir, net.settings.guid, layer, i), imgs[i])
+
+
+    print batch[0][img_num].shape
+
+
+
+    cv2.imwrite('{0}/{1}_layer_orig.png'.format(layer_dir, net.settings.guid), orig)
 
 
 
 
 def get_activations(model, layer, X_batch):
-    get_activations = K.function([model.layers[0].input, K.learning_phase()], model.layers[layer].output)
-    activations = get_activations([X_batch,0])
+    get_activations = K.function([model.layers[0].input, K.learning_phase()], [model.layers[layer].output])
+
+    activations = get_activations([X_batch[0],0])
     return activations
 
 
@@ -323,7 +357,7 @@ if __name__ == "__main__":
         callback = find_error_images
 
     if 'vl' in sys.argv:
-        layer = 0
+        layer = 2
         fun = lambda model : visualize_layer(model, layer)
         callback = fun
 
@@ -343,7 +377,9 @@ if __name__ == "__main__":
         callback = find_error_images
 
 
-
+    ####################
+    #######MODELS#######
+    ####################
 
     if "ftc25" in sys.argv: # fine_tune_conv_25.py
         import fine_tune_conv_25 as ftc
@@ -357,6 +393,14 @@ if __name__ == "__main__":
 
     elif 'sm' in sys.argv: # simple_model.py
         import simple_model as sm
+        if settings is None:
+            callback()
+            exit()
+        net = sm.get_net(settings)
+        callback(net)
+
+    elif 'sm7' in sys.argv: # simple_model_min_7.py
+        import simple_model_min_7 as sm
         if settings is None:
             callback()
             exit()

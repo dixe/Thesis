@@ -157,6 +157,19 @@ def normalize_to_pixel_vals(weights):
 
 
 
+def visualize_layer(layer):
+
+    imgs_num = len(layer)
+
+    layer = normalize_to_pixel_vals(layer)
+
+    return layer
+
+
+        
+                
+
+
 def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
     weights = normalize_to_pixel_vals(weights)
 
@@ -184,10 +197,10 @@ def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
 
 
 
-            for h in range(len(weights[i])):
-                for j in range(len(weights[i][0])):
+            for h in range(img_shape[0]):
+                for j in range(img_shape[1]):
                     filteri[h * tile_shape[0]: h  * tile_shape[0] + tile_shape[0],
-                            j * tile_shape[1]: j  * tile_shape[1] +  tile_shape[1]] = weights[i,h,j,:]
+                            j * tile_shape[1]: j  * tile_shape[1] +  tile_shape[1]] = weights[i,:,h,j]
 
 
 

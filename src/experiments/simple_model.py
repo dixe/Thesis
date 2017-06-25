@@ -73,6 +73,9 @@ class simple_model(Base_network):
     def model_name(self):
         return "simple_model"
 
+def model_name():
+    return "simple_model"
+
 
         
 

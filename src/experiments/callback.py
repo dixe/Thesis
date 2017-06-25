@@ -1,6 +1,7 @@
 import keras
 import sys
 import Weightstore as ws
+import run_settings as rs
 
 class EarlyStoppingByLossVal(keras.callbacks.Callback):
     def __init__(self, dataset, settings):
@@ -17,7 +18,7 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs={}):
 
-        EPOCH_MAX = 100
+        EPOCH_MAX = rs.nb_epoch
 
         if epoch % 3 == 0:
             self.store_weights()
@@ -65,8 +66,11 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
         pqt = (1.0* glt) / pkt
 
         store_string = self.store_string.format(epoch, "pqt", pqt, train_loss, train_acc, val_loss, val_acc)
-        with open('pqt_{0}.csv'.format(self.dataset), 'a') as pqt_f:
+
+
+        with open("{0}_pqt_{1}.csv".format(self.settings.model_name, self.dataset), 'a') as pqt_f:
             pqt_f.write(store_string)
+
 
         if pqt > PQNUM and epoch > 40:
             print("Epoch %05d: early stopping THR" % epoch)

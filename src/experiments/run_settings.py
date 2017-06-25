@@ -46,13 +46,13 @@ nb_validation_samples = size_dict_val[dataset_name]
 
 nb_train_samples = 86350 if auto_enc  else size_dict_train[dataset_name]
 
-nb_epoch = 500
+nb_epoch = 300
 
 
 class Net_settings(object):
 
 
-    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None, model_name = "", description = "", dataset = ""):
+    def __init__(self, img_width,img_height, train_data_dir, validation_data_dir, nb_train_samples,nb_validation_samples, nb_epoch, guid = None, model_name = "", description = "", dataset = "", sample_mean = False, sample_std = False):
         # path to the model weights file.
         self.load_weights_path = ""
         # dimensions of our images.
@@ -71,6 +71,8 @@ class Net_settings(object):
         self.model_name = model_name
         self.description = description
         self.dataset = dataset
+        self.sample_mean = sample_mean
+        self.sample_std = sample_std
 
 
     def get_dict(self):
@@ -89,6 +91,9 @@ class Net_settings(object):
         sd["model_name"] = self.model_name
         sd["description"] = self.description
         sd["dataset"] = self.dataset
+        sd["sample_mean"] = self.sample_mean
+        sd["sample_std"] = self.sample_std
+
         return sd
 
 
@@ -111,4 +116,6 @@ def default_settings(dataset = None):
                         nb_train_samples,
                         nb_validation_samples,
                         nb_epoch,
-                        dataset = ds)
+                        dataset = ds,
+                        sample_mean = True,
+                        sample_std = True)

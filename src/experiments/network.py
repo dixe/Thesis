@@ -54,6 +54,8 @@ class Base_network(object):
 
         # prepare data augmentation configuration
         train_datagen = ImageDataGenerator(
+            samplewise_center = self.settings.sample_mean,
+            samplewise_std_normalization= self.settings.sample_std, 
             rescale=1./255,
             #shear_range=0.2,
             #zoom_range=0.2,
@@ -62,7 +64,10 @@ class Base_network(object):
             horizontal_flip=True,
             vertical_flip=True)
 
-        test_datagen = ImageDataGenerator(rescale=1./255)
+        test_datagen = ImageDataGenerator(
+            samplewise_center = self.settings.sample_mean,
+            samplewise_std_normalization= self.settings.sample_std,
+            rescale=1./255)
 
         print "Training on dataset: " + self.settings.dataset
 

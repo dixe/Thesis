@@ -79,7 +79,10 @@ class simple_model(Base_network):
         return model
 
     def model_name(self):
-        return "simple_model"
+        return "simple_model_drop"
+
+def model_name():
+    return "simple_model_drop"
 
 
         

@@ -28,7 +28,10 @@ def load_settings_file(name, guid_string):
                              uuid.UUID(guid_string),
                              set_dict.get("model_name",""),
                              set_dict.get("description",""),
-                             set_dict.get("dataset","")))
+                             set_dict.get("dataset",""),
+                             set_dict.get("sample_mean",False),
+                             set_dict.get("sample_std",False)
+                         ))
 
 
 def load_settings(guid_substring):
@@ -117,7 +120,7 @@ def get_settings_model_name(model_name):
     uuid_settings = c.fetchall()
 
     for settings in uuid_settings:
-        print "{0}, {1}, {2}, {3}".format(settings[2], settings[8], settings[3], settings[0])
+        print "{0}, {1}, {2}, {3}, {4}".format(settings[2], settings[8], settings[3], settings[1], settings[0])
 
     return uuid_settings
 
