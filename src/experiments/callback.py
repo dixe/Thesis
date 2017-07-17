@@ -53,7 +53,7 @@ class EarlyStoppingByLossVal(keras.callbacks.Callback):
 
     def pqt_stop(self, eopt, evat, epoch, train_loss, train_acc, val_loss, val_acc):
 
-        PQNUM = 3
+        PQNUM = 1
 
         k = 5
 

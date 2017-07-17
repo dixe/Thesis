@@ -1,7 +1,6 @@
-import simple_model_min_7 as sm
 import run_settings as rs
 import os
-
+import sys
 
 
 BASE_NAME = "patches_32{0}" if rs.img_width == 32 else "patches{0}"
@@ -34,7 +33,43 @@ def run_data_arg_exp(names):
                         print "Skipping {0}".format(dataset_name)
 
 
+def run_top_exp(data_sets):
+
+    for ds in data_sets:
+        dataset_name = BASE_NAME.format(ds)
+
+        print "{0}_pqt_{1}.csv".format(sm.model_name(), dataset_name)
+
+        if not os.path.isfile("{0}_pqt_{1}.csv".format(sm.model_name(), dataset_name)):
+            print "training on {0}".format(dataset_name)
+            sm.train_dataset(dataset_name)
+        else:
+            print "Skipping {0}".format(dataset_name)        
+
+
 if __name__ == "__main__":
+
+    if 'sm' in sys.argv:
+        import simple_model as sm
+    elif 'sm755' in sys.argv:
+        import simple_model_7_5_5 as sm
+    elif 'sm7fd' in sys.argv:
+        import simple_model_7_fully_drop as sm
+    elif 'sm72' in sys.argv:
+        import simple_model_7_2_layer as sm
+    elif 'sm7nm' in sys.argv:
+        import simple_model_7_nomax as sm
+    
+
+    if 'top' in sys.argv:
+        datasets = ["_gm", "_rot_gm","_sc_gm"]
+
+        run_top_exp(datasets)
+
+        
+        exit()
+    
+    
 
     names = ['sc','gm','rot','tl']
     print "Running on {0}".format(names)

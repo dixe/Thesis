@@ -1,7 +1,9 @@
 import cv2
+import sys
+import numpy as np
 from keras.preprocessing.image import load_img, img_to_array
 
-def create_img_patches(img, windows_size, stride):
+def create_img_patches(img, window_size, stride):
 
     strides_x = len(img[0][0]) / stride
     strides_y = len(img[0][0][0])/ stride
@@ -21,7 +23,7 @@ def create_img_patches(img, windows_size, stride):
 
     patches = np.array(patches)
 
-
+    return patches
 
 def in_roi(i,j,s,w):
     y = i*s
@@ -46,8 +48,8 @@ if __name__ == "__main__":
     img = np.array([img_to_array(load_img(img_name))])
 
     print "Start create"
-
-    pathces = create_img_patches(img, 64,1)
+    
+    patches = create_img_patches(img, 64,1)
 
     print "Finish Create"
 

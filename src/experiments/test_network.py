@@ -406,6 +406,13 @@ if __name__ == "__main__":
             exit()
         net = sm.get_net(settings)
         callback(net)
+    elif 'sm755' in sys.argv: # simple_model_7_5_5.py
+        import simple_model_7_5_5 as sm
+        if settings is None:
+            callback()
+            exit()
+        net = sm.get_net(settings)
+        callback(net)
 
     elif 'sm1' in sys.argv: # simple_model_1.py
         import simple_model_1 as sm

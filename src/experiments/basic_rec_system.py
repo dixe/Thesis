@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 import run_settings as rs
-import simple_model as sm
+import simple_model_min_7_drop as sm
 import Weightstore as ws
 import cv2
 from timeit import default_timer as timer
@@ -25,11 +25,12 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4):
 
     #shape = patch.shape
     c = 0
-    res_img = np.zeros((len(img[0][0]),len(img[0][0][0]),3))
+    res_img = np.zeros((len(img[0][0]),len(img[0][0][0]),4))
     
     res_img[:,:,2] = img[0,0,:,:]
     res_img[:,:,1] = img[0,1,:,:]
     res_img[:,:,0] = img[0,2,:,:]
+    res_img[:,:,3] = 255
 
 
 
@@ -62,7 +63,19 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4):
         if preds[i] <= 0.5:
             x,y = cords[i]
             #print preds[-1], i*stride, j*stride
-            res_img[x,y,:] = np.array([0,255,42])
+            res_img[x,y,:] = np.array([0,0,225,128])
+            #TODO FIX to also work for 32 patches
+            minx = x - 32
+            maxx = x + 31
+            miny = y - 32
+            maxy = y + 31
+            #res_img[minx:maxx,miny,:] = np.array([0,255,0,128])
+            #res_img[minx:maxx,maxy,:] = np.array([0,255,0,128])
+
+            #res_img[minx,miny:maxy,:] = np.array([0,255,0,128])
+            #res_img[maxx,miny:maxy,:] = np.array([0,255,0,128])
+
+            
             #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
      
     cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)                    
@@ -151,7 +164,7 @@ def test_simple(net):
                 
                 img = np.array([img_to_array(load_img(path))])
                 
-                predict_img(model, img, f, r)
+                predict_img(model, img, net.settings.model_name + "_" + f, r)
 
 
 def run_all_settings():
@@ -203,7 +216,7 @@ if __name__ == "__main__":
         
         dataset_n = net.settings.validation_data_dir.split('/')[-2]
 
-        predict_img(model, img, dataset_n, ".", net.settings.img_width)
+        predict_img(model, img, net.settings.model_name + "_" + dataset_n, ".", net.settings.img_width)
         exit()
 
 
