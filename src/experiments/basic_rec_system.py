@@ -2,7 +2,6 @@ import sys
 import os
 import numpy as np
 import run_settings as rs
-import simple_model_min_7_drop as sm
 import Weightstore as ws
 import cv2
 from timeit import default_timer as timer
@@ -197,6 +196,18 @@ def run_all_settings():
     print "avg pred time", avg_pred_time
 
 if __name__ == "__main__":
+
+
+    if 'sm' in sys.argv:
+        import simple_model as sm
+    elif 'sm755' in sys.argv:
+        import simple_model_7_5_5 as sm
+    elif 'sm7fd' in sys.argv:
+        import simple_model_7_fully_drop as sm
+    elif 'sm72' in sys.argv:
+        import simple_model_7_2_layer as sm
+    elif 'sm7nm' in sys.argv:
+        import simple_model_7_nomax as sm
 
 
     if 'all' in sys.argv and 'img' in sys.argv:
