@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 
-CLASS_TEST_PATH = "/home/nikolaj/Desktop/GQC Algorithm Test Output/"
+CLASS_TEST_PATH = "E:/Speciale/CLAAS/GQC Algorithm Test Output/"
 
 
 def generate_class_bin_maps(base_path):
@@ -25,17 +25,13 @@ def generate_class_bin_maps(base_path):
 
 def extract_class_bin_map(img):
 
+    mask = np.zeros((len(img),len(img[0]),1),dtype=np.uint8)
 
+    maMask = img[:,:,0] == 254
+    maMask &= img[:,:,1] == 0
+    maMask &= img[:,:,2] == 254
 
-    mask = np.zeros((len(img),len(img[0]), 3),dtype=np.uint8)
-
-    mask[img == [254,0,254]] = 255
-
-    mask[img == [255,0,0]] = 0
-
-    mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-
-    mask[mask >0] = 255
+    mask[maMask] = 255
 
     return mask
 
