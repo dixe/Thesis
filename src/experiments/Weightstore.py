@@ -143,6 +143,19 @@ def add_settings(guid_name):
     conn.commit()
 
 
+def unique_models():
+
+    settings = get_settings_model_name("")
+
+    print ""
+    print ""
+    print ""
+
+    names = set(map(lambda x : x[1], settings))
+
+    for n in names:
+        print n
+
 
 def update_description(guid_substring, new_description):
     setting = get_settings(guid_substring)
@@ -163,6 +176,9 @@ def update_description(guid_substring, new_description):
 
 if __name__ == "__main__":
 
+    if 'unique' in sys.argv:
+        unique_models()
+        exit()
 
 
     if "ins" in sys.argv:
