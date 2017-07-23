@@ -63,21 +63,32 @@ def extract_class_bin_map(img):
 
 def create_ground_truth(path):
 
+    ground_img = None
+
+    imgLoader = None
+
     for r,ds,fs in os.walk(path):
         for f in fs:
-            if f.endswith("all_impurities.bmp"):
+            d = r.split('/')[-1]
+
+            if f.endswith("all_impurities.bmp") and "ground_truth" not in d:
+
                 print f
 
+                root = GROUND_TRUTH_PATH + "/" + d + "/"
+
+                out_path = root + f
+                if os.path.exists(out_path):
+                    print "bla"
+                    continue
+
                 ground_img = np.zeros((240, 376, 1),dtype=np.uint8)
+
 
                 settings = IML.Settings(False,False, False, False)
 
                 imgLoader = IML.ImgLoad(f, r, settings)
 
-
-                d = r.split('/')[-1]
-
-                root = GROUND_TRUTH_PATH + "/" + d + "/"
 
                 if not os.path.exists(root):
                     os.makedirs(root)
@@ -85,9 +96,9 @@ def create_ground_truth(path):
                 for a in imgLoader.annotations:
                     cv2.circle(ground_img, a.center, a.radius, 255, -1)
 
-                out_path = root + f
 
-                cv2.imwrite(out_path + f, ground_img)
+
+                cv2.imwrite(out_path, ground_img)
 
 
 
