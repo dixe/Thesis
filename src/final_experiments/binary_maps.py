@@ -68,19 +68,28 @@ def create_ground_truth(path):
             if f.endswith("all_impurities.bmp"):
                 print f
 
-                ground_img = np.zeros((376.240,1),dtype=np.uint8)
+                ground_img = np.zeros((240, 376, 1),dtype=np.uint8)
 
                 settings = IML.Settings(False,False, False, False)
 
                 imgLoader = IML.ImgLoad(f, r, settings)
 
 
+                d = r.split('/')[-1]
+
+                root = GROUND_TRUTH_PATH + "/" + d + "/"
+
+                if not os.path.exists(root):
+                    os.makedirs(root)
 
                 for a in imgLoader.annotations:
-                    print a.center, a.radius
-                    cv2.circle(ground_img,a.center, a.radius, 255, -1)
+                    cv2.circle(ground_img, a.center, a.radius, 255, -1)
 
-                cv2.imwrite(
+                out_path = root + f
+
+                cv2.imwrite(out_path + f, ground_img)
+
+
 
 
 
