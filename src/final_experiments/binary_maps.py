@@ -77,7 +77,7 @@ def create_ground_truth(path):
 
                 root = GROUND_TRUTH_PATH + "/" + d + "/"
 
-                out_path = root + f
+                out_path = root + f.replace(".bmp", '_ground_truth.bmp')
                 if os.path.exists(out_path):
                     print "bla"
                     continue
