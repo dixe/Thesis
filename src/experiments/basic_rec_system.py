@@ -6,7 +6,7 @@ import Weightstore as ws
 import cv2
 from timeit import default_timer as timer
 from keras.preprocessing.image import load_img, img_to_array
-
+import final_evaluation as FA
 
 total_pred_time = 0
 total_gen_time = 0
@@ -52,7 +52,7 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
 
     start = timer()
     preds = model.predict(patches)
-    end =  timer()
+    end = timer()
     total_pred_time += end-start
 
     if not bin_map:
@@ -67,7 +67,6 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
 
         if preds[i] <= 0.5:
             x,y = cords[i]
-            #print preds[-1], i*stride, j*stride
             if bin_map:
                 res_img[x,y] = 255
             else:
@@ -170,7 +169,7 @@ def test_simple(net):
     print rs.full_imgs_path
     for r,fs,fs in os.walk(rs.full_imgs_path):
         for f in fs:
-            if f.endswith('impurities.bmp'):
+            if f.endswith('impurities.bmps'):
 
                 path = r + "/" + f
 
@@ -204,6 +203,8 @@ def run_all_settings():
 
         predict_img(model, img, dataset_n, ".", net.settings.img_width)
 
+
+
     avg_gen_time = total_gen_time / (1.0*len(settings))
     print "avg gen time", avg_gen_time
 
@@ -229,25 +230,48 @@ def load_model(setting):
         import simple_model_7_nomax as sm
 
 
-def compare_setting(setting):
-    # take a settings and run through all images and compare to debug
+def compare_net(net, img_path):
 
-    bin_map, total_gen_time, total_pred_time = predict_img(model, img, net.settings.model_name + "_" + dataset_n, ".", net.settings.img_width)
-
+    # take a settings and run through all images and compare to ground thruth
 
 
-    #TODO Generate ground truth bin_maps
 
 
-    # calc score based on image ground truth
+    for r,ds,fs in os.walk(img_path):
+        scores = []
+        for f in fs:
+            if f.endswith("all_impurities.bmp"):
 
-    return score
+
+                img = np.array([img_to_array(load_img(img_name))])
+
+                #TODO Generate ground truth bin_maps - needs annotation first
+
+                bin_map, total_gen_time, total_pred_time = predict_img(model, img, None, None, window_size = net.settings.img_width, stride = 1, bin_map = True)
+
+
+                # calc score based on image ground truth
+                ground_truth = cv2.imread(r+ "/" + f.replace('.bmp', "_ground_truth.bmp"))
+                score  = FA.calc_score(bin_map, ground_truth)
+                scores.append(score)
+
+        with open(r + "/results.csv", 'w') as rf:
+            rf.write("tp,tn,fp,fn\n")
+
+            for s in score:
+                rf.write("{0}, {1}, {2}, {3}\n".format(score[0], score[1], score[2], score[3]))
+
+
 
 
 
 def run_multiple_settings(settings):
     # get settigns as a list of guid strings
 
+    for s in settings:
+        net = sm.get_net(s)
+        load_model(s)
+        compare_setting(net)
 
 
 
