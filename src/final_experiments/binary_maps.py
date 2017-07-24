@@ -82,8 +82,7 @@ def create_ground_truth(path):
                     print "bla"
                     continue
 
-                ground_img = np.zeros((240, 376), dtype=np.uint8)
-
+                ground_img = np.zeros((240, 376,1), dtype=np.uint8)
 
                 settings = IML.Settings(False,False, False, False)
 
@@ -96,25 +95,29 @@ def create_ground_truth(path):
                 for a in imgLoader.annotations:
                     cv2.circle(ground_img, a.center, a.radius, 255, -1)
 
-                mask =  np.zeros((240, 376), dtype=np.uint8)
+                ground_total = sum(ground_img.flatten())
 
-                x_min, y_min, x_max, y_min = imgLoader.get_roi_uncorrected()
+                mask =  np.zeros((240, 376,1), dtype=np.uint8)
 
-                mask[x_min:x_max, y_min: y_max] = 255
+                x_min, y_min, x_max, y_max = imgLoader.get_roi_uncorrected()
 
+                mask[y_min: y_max, x_min: x_max] = 255
 
-                cv2.imshow("ground", ground_img)
+                masked = np.logical_and(mask, ground_img)
 
-                cv2.imshow("masked", np.logical_and(mask, ground_img))
+                mask = np.zeros((240, 376,1), dtype=np.uint8)
 
-                cv2.waitKey()
-
-
-                #cv2.imwrite(out_path, ground_img)
+                mask[masked] = 255
 
 
+                masked_total = sum(mask.flatten())
+                if masked_total != ground_total and False:
+                    cv2.imshow("ground", ground_img)
+                    cv2.imshow("masked", mask)
+                    cv2.waitKey()
 
 
+                cv2.imwrite(out_path, ground_img)
 
 
 
