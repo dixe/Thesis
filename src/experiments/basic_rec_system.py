@@ -234,9 +234,6 @@ def compare_net(net, img_path):
 
     # take a settings and run through all images and compare to ground thruth
 
-
-
-
     for r,ds,fs in os.walk(img_path):
         scores = []
         for f in fs:
@@ -278,6 +275,11 @@ def run_multiple_settings(settings):
 
 
 if __name__ == "__main__":
+
+
+    if 'ft' in sys.argv:
+        settings = ['822b4']
+        run_multiple_settings(settings)
 
 
 
