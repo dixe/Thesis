@@ -106,6 +106,9 @@ class ImgLoad(object):
         return self.XmlParser.get_roi()
 
 
+    def get_roi_uncorrected(self):
+        return self.XmlParser.get_roi_uncorrected()
+
     def extract_patch(self, img, cx, cy):
         return img[cy - PATCH_SIZE_HALF: cy + PATCH_SIZE_HALF,cx - PATCH_SIZE_HALF: cx + PATCH_SIZE_HALF,:]
 
@@ -147,6 +150,8 @@ class ImgLoad(object):
             patches += self.create_patches(cx,cy)
 
         return patches, i
+
+
 
     def create_patches(self,cx,cy):
 
@@ -222,6 +227,28 @@ class XmlParser(object):
 
 
         return annotations
+
+    def get_roi_uncorrected(self):
+        if self.xml_element == None:
+            self.get_xml_entry(self.xml_root)
+        if not self.valid:
+            return 0,0,0,0
+
+        xs = []
+        ys = []
+        for l in self.xml_element.iter('line'):
+            x_start = int(float(l.find('start').find('X').text))
+            y_start = int(float(l.find('start').find('Y').text))
+
+            x_end = int(float(l.find('end').find('X').text))
+            y_end = int(float(l.find('end').find('Y').text))
+
+            xs += [x_start, x_end]
+            ys += [y_start, y_end]
+
+
+        return np.min(xs), np.min(ys) , np.max(xs), np.max(ys)
+
 
     def get_roi(self):
         if self.xml_element == None:
