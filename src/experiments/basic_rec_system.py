@@ -16,6 +16,9 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
     global total_pred_time
     global total_gen_time
 
+    pred_time = 0
+    gen_time = 0
+
     strides_x = len(img[0][0]) / stride
     strides_y = len(img[0][0][0])/ stride
 
@@ -42,20 +45,22 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
     start = timer()
     patches, cords = create_img_patches(img, window_size, stride)
     end = timer()
-
-    total_gen_time += end-start
+    
+    gen_time = end - start
+    total_gen_time += gen_time
 
     if not bin_map:
-        print "time to create data", total_gen_time, patches.shape
+        print "time to create data", gen_time, patches.shape
         print "Starting pred"
 
     start = timer()
     preds = model.predict(patches)
     end = timer()
-    total_pred_time += end-start
+    pred_time = end - start
+    total_pred_time += pred_time
 
     if not bin_map:
-        print "Finished preds in", total_pred_time
+        print "Finished preds in", pred_time
 
 
     if len(cords) != len(preds):
@@ -92,7 +97,7 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
 
     if bin_map:
         # don't write image when generating bin_maps
-        return res_img, total_gen_time, total_pred_time
+        return res_img, gen_time, pred_time
 
 
     print sum(preds)
@@ -272,7 +277,7 @@ def compare_setting(net, img_path):
  
                 print "{0}/{1}".format(i, imgs)
                 
-            i +=1
+                i +=1
         if len(scores) > 0:
 
             with open(file_name, 'w') as rf:
