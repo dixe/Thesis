@@ -13,7 +13,6 @@ total_gen_time = 0
 
 def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_map = False):
 
-
     global total_pred_time
     global total_gen_time
 
@@ -87,11 +86,15 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
 
             #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
 
+
+    if root is not None and img_name is not None:
+        cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)
+
     if bin_map:
         # don't write image when generating bin_maps
         return res_img, total_gen_time, total_pred_time
 
-    cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)
+
     print sum(preds)
 
 
@@ -176,7 +179,7 @@ def test_simple(net):
                 print path
 
                 img = np.array([img_to_array(load_img(path))])
-
+                
                 predict_img(model, img, net.settings.model_name + "_" + f, r)
 
 
@@ -235,11 +238,17 @@ def compare_setting(net, img_path):
     # take a settings and run through all images and compare to ground thruth
 
     model = net.get_model_test()
+    print img_path
     for r,ds,fs in os.walk(img_path):
         scores = []
         gen_times = []
         pred_times = []
-        print r
+
+        file_name = r + "/{0}_results.csv".format(net.settings.guid)
+        print file_name
+
+        imgs = len(list(filter(lambda x : x.endswith("all_impurities.bmp"),fs)))
+        i = 0
         for f in fs:
             if f.endswith("all_impurities.bmp"):
 
@@ -248,7 +257,9 @@ def compare_setting(net, img_path):
 
                 #TODO Generate ground truth bin_maps - needs annotation first
 
-                bin_map, total_gen_time, total_pred_time = predict_img(model, img, None, None, window_size = net.settings.img_width, stride = 1, bin_map = True)
+                img_name = str(net.settings.guid) + "_" + f
+                root = r
+                bin_map, total_gen_time, total_pred_time = predict_img(model, img, img_name, root, window_size = net.settings.img_width, stride = 1, bin_map = True)
 
                 # calc score based on image ground truth
                 ground_truth = cv2.imread(r+ "/" + f.replace('.bmp', "_ground_truth.bmp"),0)
@@ -257,9 +268,14 @@ def compare_setting(net, img_path):
                 scores.append(score)
                 gen_times.append(total_gen_time)
                 pred_times.append(total_pred_time)
-
+                
+ 
+                print "{0}/{1}".format(i, imgs)
+                
+            i +=1
         if len(scores) > 0:
-            with open(r + "/results.csv", 'w') as rf:
+
+            with open(file_name, 'w') as rf:
                 rf.write("tp,tn,fp,fn, gen_time, pred_time\n")
 
                 for i in range(len(scores)):
@@ -300,10 +316,11 @@ if __name__ == "__main__":
 
     if 'ft' in sys.argv:
         settings = ['822b4']
-        path = "/home/ltm741/thesis/datasets/final_test_sets/mini_test/"
+        path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
         run_multiple_settings(settings, path)
         exit()
 
+    exit()
 
     if 'sm' in sys.argv:
         import simple_model as sm
