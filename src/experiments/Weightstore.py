@@ -100,12 +100,12 @@ def get_settings(guid_substring):
     num_settings = len(settings)
     if num_settings != 1:
         if num_settings == 0:
-            print "No settings found: {0}".format(guid_substring)
+            print("No settings found: {0}".format(guid_substring))
             return None
 
-        print "Multiple settings found"
+        print("Multiple settings found")
         for s in settings:
-            print s.guid
+            print(s.guid)
         return None
     return settings[0]
 
@@ -120,7 +120,7 @@ def get_settings_model_name(model_name):
     uuid_settings = c.fetchall()
 
     for settings in uuid_settings:
-        print "{0}, {1}, {2}, {3}, {4}".format(settings[2], settings[8], settings[3], settings[1], settings[0])
+        print("{0}, {1}, {2}, {3}, {4}".format(settings[2], settings[8], settings[3], settings[1], settings[0]))
 
     return uuid_settings
 
@@ -147,14 +147,12 @@ def unique_models():
 
     settings = get_settings_model_name("")
 
-    print ""
-    print ""
-    print ""
+    print("")
 
     names = set(map(lambda x : x[1], settings))
 
     for n in names:
-        print n
+        print(n)
 
 
 def update_description(guid_substring, new_description):
@@ -171,7 +169,7 @@ def update_description(guid_substring, new_description):
     c.execute(SQL,(new_description, str(setting.guid)))
     conn.commit()
 
-    print "Updated {0} description to {1}".format(setting.guid, new_description)
+    print("Updated {0} description to {1}".format(setting.guid, new_description))
 
 
 if __name__ == "__main__":
