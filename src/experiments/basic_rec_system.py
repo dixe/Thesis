@@ -45,7 +45,7 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
     start = timer()
     patches, cords = create_img_patches(img, window_size, stride)
     end = timer()
-    
+
     gen_time = end - start
     total_gen_time += gen_time
 
@@ -163,7 +163,7 @@ def get_settings_from_sysarg():
 
 def get_arg_from_sysargv(arg_name):
     if arg_name not in sys.argv:
-        return Non
+        return None
 
     index = sys.argv.index(arg_name)
     return sys.argv[index + 1]
@@ -184,7 +184,7 @@ def test_simple(net):
                 print path
 
                 img = np.array([img_to_array(load_img(path))])
-                
+
                 predict_img(model, img, net.settings.model_name + "_" + f, r)
 
 
@@ -225,7 +225,7 @@ def run_all_settings():
 
 def load_model(setting):
 
- 
+
     if 'simple_model' == setting.model_name:
         import simple_model as sm
     elif 'simple_model_7_5_5' == setting.model_name:
@@ -273,10 +273,10 @@ def compare_setting(net, img_path):
                 scores.append(score)
                 gen_times.append(total_gen_time)
                 pred_times.append(total_pred_time)
-                
- 
+
+
                 print "{0}/{1}".format(i, imgs)
-                
+
                 i +=1
         if len(scores) > 0:
 
@@ -297,7 +297,7 @@ def run_multiple_settings(settings, img_path):
     for s in settings:
         setting = ws.get_settings(s)
 
- 
+
         if 'simple_model' == setting.model_name:
             import simple_model as sm
         elif 'simple_model_7_5_5' == setting.model_name:
