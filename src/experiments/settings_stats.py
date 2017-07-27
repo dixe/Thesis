@@ -1,10 +1,23 @@
 import run_settings as rs
 import Weightstore as ws
-import sys.argv
+import sys
 
 def load_settings_from_file(filePath):
 
-    return []
+    lines = []
+    with open(filePath,'r') as f:
+        for l in f.readlines():
+            lines.append(l)
+
+    settings = []
+    for l in lines:
+        if l and not l.startswith('#'):
+            setting = ws.load_settings(l)
+            print (setting)
+            settings.append(setting)
+            exit()
+
+    return settings
 
 
 def create_settings_row(settings):
