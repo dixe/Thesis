@@ -7,7 +7,7 @@ import cv2
 from timeit import default_timer as timer
 from keras.preprocessing.image import load_img, img_to_array
 import final_evaluation as FA
-
+import settings_stats as ss
 total_pred_time = 0
 total_gen_time = 0
 
@@ -321,11 +321,19 @@ if __name__ == "__main__":
 
     if 'ft' in sys.argv:
         settings = ['822b4']
+        if 'setting_path' in sys.argv:
+            settings_file_path = get_arg_from_sysargv('setting_path')
+            settings = list(map(lambda x : str(x.guid), ss.load_settings_from_file(settings_file_path)))
+
+        else:
+            settings = ['822b4']
+
+
         path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
+        print settings
         run_multiple_settings(settings, path)
         exit()
 
-    exit()
 
     if 'sm' in sys.argv:
         import simple_model as sm
