@@ -21,5 +21,4 @@ f6b763cd-b6e4-4ac0-b90e-80e2235d8693
 14310553-cf99-4143-9daa-df64c3c2ef63
 b31c7761-ac24-4b60-b15e-6bfb88b4c4b0
 3f82077a-c8ce-4c74-9c64-9268b85746fb
-
-#missing settings #thrid_gm is running from "simple_model, with sample_mean and sample_std"
+c0b69bce-5efa-4f27-8a85-4e647d707f0f
