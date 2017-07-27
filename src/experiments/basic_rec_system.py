@@ -13,9 +13,11 @@ total_gen_time = 0
 
 def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_map = False):
 
-
     global total_pred_time
     global total_gen_time
+
+    pred_time = 0
+    gen_time = 0
 
     strides_x = len(img[0][0]) / stride
     strides_y = len(img[0][0][0])/ stride
@@ -26,7 +28,7 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
     c = 0
     res_img = None
     if bin_map:
-        res_img = np.zeros((len(img[0][0]),len(img[0][0][0]),1), dtype = np.uint8)
+        res_img = np.zeros((len(img[0][0]),len(img[0][0][0])), dtype = np.uint8)
     else:
         # draw on top of regular img
         res_img = np.zeros((len(img[0][0]),len(img[0][0][0]),4))
@@ -43,20 +45,22 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
     start = timer()
     patches, cords = create_img_patches(img, window_size, stride)
     end = timer()
-
-    total_gen_time += end-start
+    
+    gen_time = end - start
+    total_gen_time += gen_time
 
     if not bin_map:
-        print "time to create data", total_gen_time, patches.shape
+        print "time to create data", gen_time, patches.shape
         print "Starting pred"
 
     start = timer()
     preds = model.predict(patches)
     end = timer()
-    total_pred_time += end-start
+    pred_time = end - start
+    total_pred_time += pred_time
 
     if not bin_map:
-        print "Finished preds in", total_pred_time
+        print "Finished preds in", pred_time
 
 
     if len(cords) != len(preds):
@@ -87,11 +91,15 @@ def predict_img(model, img, img_name, root, window_size = 64, stride = 4, bin_ma
 
             #store_patch(patch, "{0}/patch_{1}_{2}.png".format(root,img_name,c))
 
+
+    if root is not None and img_name is not None:
+        cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)
+
     if bin_map:
         # don't write image when generating bin_maps
-        return res_img, total_gen_time, total_pred_time
+        return res_img, gen_time, pred_time
 
-    cv2.imwrite("{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png"), res_img)
+
     print sum(preds)
 
 
@@ -176,7 +184,7 @@ def test_simple(net):
                 print path
 
                 img = np.array([img_to_array(load_img(path))])
-
+                
                 predict_img(model, img, net.settings.model_name + "_" + f, r)
 
 
@@ -217,7 +225,7 @@ def run_all_settings():
 
 def load_model(setting):
 
-
+ 
     if 'simple_model' == setting.model_name:
         import simple_model as sm
     elif 'simple_model_7_5_5' == setting.model_name:
@@ -230,45 +238,79 @@ def load_model(setting):
         import simple_model_7_nomax as sm
 
 
-def compare_net(net, img_path):
+def compare_setting(net, img_path):
 
     # take a settings and run through all images and compare to ground thruth
 
+    model = net.get_model_test()
+    print img_path
     for r,ds,fs in os.walk(img_path):
         scores = []
+        gen_times = []
+        pred_times = []
+
+        file_name = r + "/{0}_results.csv".format(net.settings.guid)
+        print file_name
+
+        imgs = len(list(filter(lambda x : x.endswith("all_impurities.bmp"),fs)))
+        i = 0
         for f in fs:
             if f.endswith("all_impurities.bmp"):
 
 
-                img = np.array([img_to_array(load_img(img_name))])
+                img = np.array([img_to_array(load_img(r + '/' + f))])
 
                 #TODO Generate ground truth bin_maps - needs annotation first
 
-                bin_map, total_gen_time, total_pred_time = predict_img(model, img, None, None, window_size = net.settings.img_width, stride = 1, bin_map = True)
-
+                img_name = str(net.settings.guid) + "_" + f
+                root = r
+                bin_map, total_gen_time, total_pred_time = predict_img(model, img, img_name, root, window_size = net.settings.img_width, stride = 1, bin_map = True)
 
                 # calc score based on image ground truth
-                ground_truth = cv2.imread(r+ "/" + f.replace('.bmp', "_ground_truth.bmp"))
-                score  = FA.calc_score(bin_map, ground_truth)
+                ground_truth = cv2.imread(r+ "/" + f.replace('.bmp', "_ground_truth.bmp"),0)
+
+                score = FA.calc_score(bin_map, ground_truth)
                 scores.append(score)
+                gen_times.append(total_gen_time)
+                pred_times.append(total_pred_time)
+                
+ 
+                print "{0}/{1}".format(i, imgs)
+                
+                i +=1
+        if len(scores) > 0:
 
-        with open(r + "/results.csv", 'w') as rf:
-            rf.write("tp,tn,fp,fn\n")
+            with open(file_name, 'w') as rf:
+                rf.write("tp,tn,fp,fn, gen_time, pred_time\n")
 
-            for s in score:
-                rf.write("{0}, {1}, {2}, {3}\n".format(score[0], score[1], score[2], score[3]))
-
-
-
+                for i in range(len(scores)):
+                    score = scores[i]
+                    rf.write("{0}, {1}, {2}, {3}, {4}, {5}\n".format(score[0], score[1], score[2], score[3], gen_times[i], pred_times[i]))
 
 
-def run_multiple_settings(settings):
+
+
+
+def run_multiple_settings(settings, img_path):
     # get settigns as a list of guid strings
 
     for s in settings:
-        net = sm.get_net(s)
-        load_model(s)
-        compare_setting(net)
+        setting = ws.get_settings(s)
+
+ 
+        if 'simple_model' == setting.model_name:
+            import simple_model as sm
+        elif 'simple_model_7_5_5' == setting.model_name:
+            import simple_model_7_5_5 as sm
+        elif 'simple_model_7_fully_drop' == setting.model_name:
+            import simple_model_fully_drop as sm
+        elif 'simple_model_7_2_layer' == setting.model_name:
+            import simple_model_7_2_layer as sm
+        elif 'simple_model_7_nomax' == setting.model_name:
+            import simple_model_7_nomax as sm
+
+        net = sm.get_net(setting)
+        compare_setting(net, img_path)
 
 
 
@@ -279,9 +321,11 @@ if __name__ == "__main__":
 
     if 'ft' in sys.argv:
         settings = ['822b4']
-        run_multiple_settings(settings)
+        path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
+        run_multiple_settings(settings, path)
+        exit()
 
-
+    exit()
 
     if 'sm' in sys.argv:
         import simple_model as sm

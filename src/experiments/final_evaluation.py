@@ -3,13 +3,13 @@ import numpy as np
 
 def calc_score(bin_map, ground_truth):
 
-    bin_white = bin_map[bin_map == 255]
+    bin_white = bin_map == 255
 
-    ground_white = bin_map[bin_map == 255]
+    ground_white = ground_truth == 255
 
-    bin_black = bin_map[bin_map == 0]
+    bin_black = bin_map == 0
 
-    ground_black = bin_map[bin_map == 0]
+    ground_black = ground_truth == 0
 
     tp = np.sum(np.logical_and(bin_white, ground_white).flatten())
 
