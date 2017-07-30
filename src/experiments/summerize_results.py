@@ -81,21 +81,23 @@ def summerize(path):
 
     for r, ds, fs in os.walk(path):
         for d in ds:
-            for f in fs:
-                if f.endswith('results.csv'):
-                    guid = f.split('_')[0]
-                    settings = ws.get_settings(guid)
-                    model_name = settings.model_name
+            results[d] = {}
 
-                    folder = d
-                    print folder
-                    continue
+    for r, ds, fs in os.walk(path):
+        for f in fs:
+            if f.endswith('results.csv'):
+                guid = f.split('_')[0]
+                settings = ws.get_settings(guid)
+                model_name = settings.model_name
 
-                    dict_id = guid + "_" + folder
-                    print dict_id
+                folder = r.split('/')[-1]
 
-                    values = get_results(r+ "/" + f)
-                    results[dict_id] = calc_results(values)
+
+                values = get_results(r+ "/" + f)
+                results[folder][guid] = calc_results(values)
+
+    for key in results.key:
+        print key
 
 
 
