@@ -76,24 +76,29 @@ def calc_results(values):
 
 def summerize(path):
 
+    out_path = 'final_exps'
     results = {}
 
     for r, ds, fs in os.walk(path):
-        for f in fs:
-            if f.endswith('results.csv'):
-                guid = f.split('_')[0]
-                settings = ws.get_settings(guid)
-                model_name = settings.model_name
-                
-                folder = r.split('/')[-1]
+        for d in ds:
+            for f in fs:
+                if f.endswith('results.csv'):
+                    guid = f.split('_')[0]
+                    settings = ws.get_settings(guid)
+                    model_name = settings.model_name
 
-                dict_id = guid + "_" + folder
-                print dict_id
+                    folder = d
+                    print folder
+                    continue
 
-                values = get_results(r+ "/" + f)
-                results[dict_id] = calc_results(values)
-                print results[dict_id]['total_f1']
-                exit()
+                    dict_id = guid + "_" + folder
+                    print dict_id
+
+                    values = get_results(r+ "/" + f)
+                    results[dict_id] = calc_results(values)
+
+
+
 
 
 
