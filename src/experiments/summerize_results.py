@@ -64,14 +64,25 @@ def calc_results(values):
 
     res['avg_acc'] /= 1.0 * len(tp)
 
-    res['total_acc'] = (1.0 * res['total_tp'] + res['total_tn']) / (res['total_tp'] + res['total_tn'] + res['total_fp'] + fn_i)
+    try:
+        res['total_acc'] = (1.0 * res['total_tp'] + res['total_tn']) / (res['total_tp'] + res['total_tn'] + res['total_fp'] + fn_i)
+    except:
+        res['total_acc'] = 0
 
-    res['total_precision'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fp'])
+    try:
+        res['total_precision'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fp'])
+    except:
+        res['total_precision'] = 0
 
-    res['total_recall'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fn'])
+    try:
+        res['total_recall'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fn'])
+    except:
+        res['total_recall'] = 0
 
-    res['total_f1'] = (2.0*res['total_precision'] * res['total_recall']) / (res['total_precision'] + res['total_recall'] )
-
+    try:
+        res['total_f1'] = (2.0*res['total_precision'] * res['total_recall']) / (res['total_precision'] + res['total_recall'] )
+    except:
+        res['total_f1'] = 0
     return res
 
 def summerize(path):
@@ -93,10 +104,10 @@ def summerize(path):
                 folder = r.split('/')[-1]
 
 
-                values = get_results(r+ "/" + f)
-                results[folder][guid] = calc_results(values)
+                #values = get_results(r+ "/" + f)
+                results[folder][guid] = "TMP" #calc_results(values)
 
-    for key in results.key:
+    for key in results.keys():
         print key
 
 
