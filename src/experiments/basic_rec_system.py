@@ -222,32 +222,18 @@ def run_all_settings():
 
 
 
-
-def load_model(setting):
-
-
-    if 'simple_model' == setting.model_name:
-        import simple_model as sm
-    elif 'simple_model_7_5_5' == setting.model_name:
-        import simple_model_7_5_5 as sm
-    elif 'simple_model_7_fully_drop' == setting.model_name:
-        import simple_model_fully_drop as sm
-    elif 'simple_model_7_2_layer' == setting.model_name:
-        import simple_model_7_2_layer as sm
-    elif 'simple_model_7_nomax' == setting.model_name:
-        import simple_model_7_nomax as sm
-
-
-def compare_setting(net, img_path):
+def compare_setting(net, img_path, force = False):
 
     # take a settings and run through all images and compare to ground thruth
-
+    print net.settings.model_name , net.settings.guid
     model = net.get_model_test()
     print img_path
+    print net.settings.guid
     for r,ds,fs in os.walk(img_path):
         scores = []
         gen_times = []
         pred_times = []
+        f_names = []
 
         file_name = r + "/{0}_results.csv".format(net.settings.guid)
         print file_name
@@ -256,14 +242,19 @@ def compare_setting(net, img_path):
         i = 0
         for f in fs:
             if f.endswith("all_impurities.bmp"):
+                img_name = str(net.settings.guid) + "_" + f
+                root = r
+                out_img_name = "{0}/{1}_output.{2}".format(root, img_name.split('.')[0],"png")
+
+                if not force and os.path.exists(out_img_name):
+                    continue
 
 
                 img = np.array([img_to_array(load_img(r + '/' + f))])
 
                 #TODO Generate ground truth bin_maps - needs annotation first
 
-                img_name = str(net.settings.guid) + "_" + f
-                root = r
+                    
                 bin_map, total_gen_time, total_pred_time = predict_img(model, img, img_name, root, window_size = net.settings.img_width, stride = 1, bin_map = True)
 
                 # calc score based on image ground truth
@@ -273,26 +264,28 @@ def compare_setting(net, img_path):
                 scores.append(score)
                 gen_times.append(total_gen_time)
                 pred_times.append(total_pred_time)
-
+                f_names.append(f)
 
                 print "{0}/{1}".format(i, imgs)
 
                 i +=1
+
         if len(scores) > 0:
 
             with open(file_name, 'w') as rf:
-                rf.write("tp,tn,fp,fn, gen_time, pred_time\n")
+                rf.write("tp,tn,fp,fn, gen_time, pred_time, filename\n")
 
                 for i in range(len(scores)):
                     score = scores[i]
-                    rf.write("{0}, {1}, {2}, {3}, {4}, {5}\n".format(score[0], score[1], score[2], score[3], gen_times[i], pred_times[i]))
+                    rf.write("{0}, {1}, {2}, {3}, {4}, {5}, {6}\n".format(score[0], score[1], score[2], score[3], gen_times[i], pred_times[i], f_names[i]))
 
 
 
 
 
-def run_multiple_settings(settings, img_path):
+def run_multiple_settings(settings, img_path, force):
     # get settigns as a list of guid strings
+
 
     for s in settings:
         setting = ws.get_settings(s)
@@ -303,14 +296,27 @@ def run_multiple_settings(settings, img_path):
         elif 'simple_model_7_5_5' == setting.model_name:
             import simple_model_7_5_5 as sm
         elif 'simple_model_7_fully_drop' == setting.model_name:
-            import simple_model_fully_drop as sm
+            import simple_model_7_fully_drop as sm
         elif 'simple_model_7_2_layer' == setting.model_name:
             import simple_model_7_2_layer as sm
         elif 'simple_model_7_nomax' == setting.model_name:
             import simple_model_7_nomax as sm
+        elif 'simple_model_min_7_drop' == setting.model_name:
+            import simple_model_min_7_drop as sm
+        elif 'simple_model_min_7' == setting.model_name:
+            import simple_model_min_7 as sm
 
         net = sm.get_net(setting)
-        compare_setting(net, img_path)
+        try:
+            compare_setting(net, img_path, force)
+        except Exception as e:            
+            file_name = img_path + "/{0}_error.csv".format(net.settings.guid) 
+            print "Error in {0}, saving to {1}".format(net.settings.guid, file_name)
+            with open(file_name, 'w') as f:
+                f.write("Error in {0}\n".format(net.settings.guid))
+                f.write(str(type(e)))
+                f.write('\n')
+                f.write(str(e))
 
 
 
@@ -320,18 +326,14 @@ if __name__ == "__main__":
 
 
     if 'ft' in sys.argv:
-        settings = ['822b4']
-        if 'setting_path' in sys.argv:
-            settings_file_path = get_arg_from_sysargv('setting_path')
-            settings = list(map(lambda x : str(x.guid), ss.load_settings_from_file(settings_file_path)))
+        settings_file_path = "settings_to_test.txt"
+        settings = list(map(lambda x : str(x.guid), ss.load_settings_from_file(settings_file_path)))
 
-        else:
-            settings = ['822b4']
-
+        force = 'force' in sys.argv            
 
         path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
         print settings
-        run_multiple_settings(settings, path)
+        run_multiple_settings(settings, path, force)
         exit()
 
 

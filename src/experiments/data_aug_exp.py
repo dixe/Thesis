@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
     if 'top' in sys.argv:
         datasets = ["_gm", "_rot_gm","_sc_gm"]
-
-        datasets = ["_gm"]
+        
+        datasets = ["_tl_gm", "_rot_tl"]
 
         run_top_exp(datasets)
 
