@@ -49,6 +49,7 @@ def calc_results(values):
 
     res['avg_acc'] = 0
 
+
     for i in range(len(tp)):
         tp_i = tp[i]
         tn_i = tn[i]
@@ -85,7 +86,16 @@ def calc_results(values):
         res['total_f1'] = 0
     return res
 
-def summerize(path):
+
+def table_row(res, model_name):
+
+    return "{0} & {1} & {2} & {3} & {4}\\\\ \\hline".format(model_name,
+                                                            res['total_acc'],
+                                                            res['total_recall'],
+                                                            res['total_precision'],
+                                                            res['total_f1'])
+
+def summerize(path, out_path):
 
     out_path = 'final_exps'
     results = {}
@@ -104,11 +114,26 @@ def summerize(path):
                 folder = r.split('/')[-1]
 
 
-                #values = get_results(r+ "/" + f)
-                results[folder][guid] = "TMP" #calc_results(values)
+                values = get_results(r+ "/" + f)
+                results[folder][guid] = (calc_results(values),model_name)
 
     for key in results.keys():
-        print key
+        header = "\\begin{tabluar}{|c|c|c|c|c}\\\\ \\hline"
+        header += "Model Name & Acc & Recall & Precision & F1 \\\\ \\hline"
+        body = ""
+        footer = "\\end{tabluar}"
+        for guid in results[key]:
+            res = results[res][guid]
+            body +=table_row(res[0], res[1])
+
+
+        file_name = ""
+
+        print "Wirting: " + file_name
+
+        with open(file_name, 'w') as f:
+            w.rite(header + body + footer)
+
 
 
 
