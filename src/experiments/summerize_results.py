@@ -5,6 +5,17 @@ import run_settings as rs
 import Weightstore as ws
 import cv2
 
+model_name_id = {}
+
+model_name_id['simple_model'] = 1
+model_name_id['simple_model'] = 2
+model_name_id['simple_model_7_2_layer'] = 3
+model_name_id['simple_model_7_5_5'] = 4
+model_name_id['simple_model_7_fully_drop'] = 5
+model_name_id['simple_model_7_nomax'] = 6
+model_name_id['simple_model_min_7'] = 7
+model_name_id['simple_model_min_7_drop'] = 8
+
 
 def get_results(file_path):
 
@@ -48,7 +59,8 @@ def calc_results(values):
     res['total_fn'] = 0
 
     res['avg_acc'] = 0
-
+    
+    error = False
 
     for i in range(len(tp)):
         tp_i = tp[i]
@@ -69,27 +81,29 @@ def calc_results(values):
         res['total_acc'] = (1.0 * res['total_tp'] + res['total_tn']) / (res['total_tp'] + res['total_tn'] + res['total_fp'] + fn_i)
     except:
         res['total_acc'] = 0
-
+        error = True
     try:
         res['total_precision'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fp'])
     except:
         res['total_precision'] = 0
-
+        error = True
     try:
         res['total_recall'] = (res['total_tp'] * 1.0) / (res['total_tp'] + res['total_fn'])
     except:
         res['total_recall'] = 0
-
+        error = True
     try:
         res['total_f1'] = (2.0*res['total_precision'] * res['total_recall']) / (res['total_precision'] + res['total_recall'] )
     except:
         res['total_f1'] = 0
-    return res
+        error = True
+    return res, error
 
 
-def table_row(res, model_name):
+def table_row(res, model_id):
+        
 
-    return "{0} & {1} & {2} & {3} & {4}\\\\ \\hline".format(model_name,
+    return "{0} & {1:0.4f} & {2:0.4f} & {3:0.4f} & {4:0.4f}\\\\ \\hline \n".format(model_id,
                                                             res['total_acc'],
                                                             res['total_recall'],
                                                             res['total_precision'],
@@ -110,29 +124,40 @@ def summerize(path, out_path):
                 guid = f.split('_')[0]
                 settings = ws.get_settings(guid)
                 model_name = settings.model_name
+                std = settings.sample_std
 
                 folder = r.split('/')[-1]
 
 
                 values = get_results(r+ "/" + f)
-                results[folder][guid] = (calc_results(values),model_name)
+
+                model_id = model_name_id[model_name]
+
+                model_id = model_id if model_id != 1 or not std else 2 # simple_model with and without std and mean have same name
+    
+                res, error = calc_results(values)
+
+                if error:
+                    print guid
+                
+                results[folder][guid] = (res, model_id)
 
     for key in results.keys():
-        header = "\\begin{tabluar}{|c|c|c|c|c}\\\\ \\hline"
-        header += "Model Name & Acc & Recall & Precision & F1 \\\\ \\hline"
+        header = "\\begin{tabular}{|c|c|c|c|c|} \\hline\n"
+        header += "Model Name & Acc & Recall & Precision & F1 \\\\ \\hline \n"
         body = ""
-        footer = "\\end{tabluar}"
+        footer = "\\end{tabular}"
         for guid in results[key]:
-            res = results[res][guid]
-            body +=table_row(res[0], res[1])
+            res = results[key][guid]
+            body += table_row(res[0], res[1])
 
 
-        file_name = ""
+        file_name = out_path + "/" + key.replace(' ', '_') + ".tex"
 
-        print "Wirting: " + file_name
+        print "Wirting: " + file_name 
 
         with open(file_name, 'w') as f:
-            w.rite(header + body + footer)
+            f.write(header + body + footer)
 
 
 
@@ -145,5 +170,9 @@ def summerize(path, out_path):
 
 
 if __name__ == "__main__":
+
     path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
-    summerize(path)
+
+    out_path = "final_exps/"
+
+    summerize(path, out_path)
