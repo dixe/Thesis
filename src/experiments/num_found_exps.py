@@ -22,6 +22,7 @@ def found_annos(path, claas_path = None):
 
         total_annos = {}
         found = {}
+        folders = {}
 
         if claas:
             total_annos['claas'] = 0
@@ -29,9 +30,13 @@ def found_annos(path, claas_path = None):
 
         files = len(fs)
         i = 0
+
+        folder = r.split('/')[-1]
+
         for f in fs:
             print "{0}/{1}".format(i, files)
             i += 1
+
             if claas:
                 if f.endswith('_ground_truth.bmp'):
                     frame = str(int(f.split('-')[0]))
@@ -43,7 +48,7 @@ def found_annos(path, claas_path = None):
 
                     annos = xml_p.get_annotations()
 
-                    total_annos['claas'] += len(annos)
+                    total_annos['claas' + folder] += len(annos)
 
                     for a in annos:
                         cv2.circle(anno_img, a.center, a.radius, 255, -1)
@@ -59,6 +64,7 @@ def found_annos(path, claas_path = None):
                     if not guid in total_annos:
                         total_annos[guid] = 0
                         found[guid] = 0
+                        folders[guid] = folder
 
                     frame = str(int(splited[1].split('-')[0]))
                     xml_p =  IML.XmlParser(xml_file, "all_impurities", frame)
@@ -77,9 +83,9 @@ def found_annos(path, claas_path = None):
                         anno_img = np.zeros((240,376))
 
         with open('num_found_results.csv', 'w') as outf:
-            outf.write('guid, found, total\n')
+            outf.write('guid, folder, found, total\n')
             for guid in total_annos:
-                outf.write("{0}, {1}, {2}\n".format(guid, found[guid], total_annos[guid]))
+                outf.write("{0}, {1}, {2}, {3}\n".format(guid, folders[guid], found[guid], total_annos[guid]))
 
 if __name__ == "__main__":
 
