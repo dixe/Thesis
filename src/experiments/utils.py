@@ -145,11 +145,11 @@ def tile_raster_images(X, img_shape, tile_shape, tile_spacing=(0, 0),
 def normalize_to_pixel_vals(weights):
 
     for i in range(len(weights)):
-    
+
         weights[i] -= np.min(weights[i])
         weights[i] /= np.max(weights[i])
         weights[i] *= 255
-    
+
     return weights
 
 
@@ -166,8 +166,8 @@ def visualize_layer(layer):
     return layer
 
 
-        
-                
+
+
 
 
 def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
@@ -214,6 +214,27 @@ def tile_raster_color(weights, img_shape, tile_shape, tile_spacing=(1, 1)):
 
 
     return out_img
+
+
+
+
+
+def store(obj, name):
+    with open(name,'w') as fp:
+        pickle.dump(obj,fp)
+
+def load(name):
+    with open(name,'r') as fp:
+        return pickle.load(fp)
+
+def imshow(img, name = ""):
+    cv2.imshow(name, img)
+    cv2.waitKey()
+
+def imshowExit(img,name = ""):
+    imshow(img,name)
+    exit()
+
 
 
 
