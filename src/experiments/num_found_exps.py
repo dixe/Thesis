@@ -24,14 +24,14 @@ def found_annos(path, claas_path = None):
         found = {}
         folders = {}
 
-        if claas:
-            total_annos['claas'] = 0
-            found['claas'] = 0
-
         files = len(fs)
         i = 0
 
         folder = r.split('/')[-1]
+        if claas and  not 'claas' + folder in folders:
+            total_annos['claas' + folder] = 0
+            found['claas' + folder] = 0
+            folders['claas' + folder] = folder
 
         for f in fs:
             print "{0}/{1}".format(i, files)
@@ -53,7 +53,7 @@ def found_annos(path, claas_path = None):
                     for a in annos:
                         cv2.circle(anno_img, a.center, a.radius, 255, -1)
 
-                        found['claas'] += 1 if sum(np.logical_and(anno_img.flatten(),bin_map.flatten())) > 1 else 0
+                        found['claas' + folder] += 1 if sum(np.logical_and(anno_img.flatten(),bin_map.flatten())) > 1 else 0
 
                         anno_img = np.zeros((240,376))
             else:
