@@ -82,14 +82,14 @@ def found_annos(path, claas_path = None):
 
                         anno_img = np.zeros((240,376))
 
-        with open('num_found_results.csv', 'w') as outf:
+        with open('{0}_num_found_results.csv'.format(folder), 'w') as outf:
             outf.write('guid, folder, found, total\n')
             for guid in total_annos:
                 outf.write("{0}, {1}, {2}, {3}\n".format(guid, folders[guid], found[guid], total_annos[guid]))
 
 if __name__ == "__main__":
 
-    path = "test_folder"
+    path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
     if 'claas' in sys.argv:
         path = "E:/Speciale/CLAAS/DIKU Test dataset/Annotated/"
         claas_path = "E:/Speciale/CLAAS/GQC Algorithm Test Output/"
