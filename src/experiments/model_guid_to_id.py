@@ -11,7 +11,7 @@ id_dict[('csv_simple_model_7_fully_drop', True)] = 5
 id_dict[('csv_simple_model_7_nomax', True)] = 6
 id_dict[('csv_simple_model_min_7', True)] = 7
 id_dict[('csv_simple_model_min_7_drop', True)] = 8
-
+id_dict[1] =
 
 dataset_ids = {}
 
@@ -31,7 +31,20 @@ def get_dataset_id(name):
 
     return dataset_ids[name]
 
+
+def get_model_guid(dataset_id, model_id)
+
+
+
 if __name__ == "__main__":
+
+    if 'toguid' in sys.argv:
+        dataset_id = sys.arv[-2]
+        model_id = sys.argv[-1]
+
+
+
+        exit()
 
     guid_str = sys.argv[-1]
 
