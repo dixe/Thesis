@@ -13,18 +13,28 @@ id_dict[('csv_simple_model_min_7', True)] = 7
 id_dict[('csv_simple_model_min_7_drop', True)] = 8
 
 
+dataset_ids = {}
 
-
-def get_id(guid_str):
+def get_model_id(guid_str):
     setting = ws.get_settings(guid_str)
 
     return id_dict[(setting.model_name, setting.sample_std)]
 
 
+def get_dataset_id(name):
+    global dataset_ids
+
+    if not dataset_ids:
+
+        with open('dataset_id.json','r') as f:
+            dataset_ids = json.load(f)
+
+    return dataset_ids[name]
+
 if __name__ == "__main__":
 
     guid_str = sys.argv[-1]
 
-    idd = get_id(guid_str)
+    idd = get_model_id(guid_str)
 
     print(idd)
