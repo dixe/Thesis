@@ -4,7 +4,7 @@ import numpy as np
 import run_settings as rs
 import Weightstore as ws
 import cv2
-
+import model_guid_to_id as mid
 model_name_id = {}
 
 model_name_id['simple_model'] = 1
@@ -59,7 +59,7 @@ def calc_results(values):
     res['total_fn'] = 0
 
     res['avg_acc'] = 0
-    
+
     error = False
 
     for i in range(len(tp)):
@@ -100,14 +100,15 @@ def calc_results(values):
     return res, error
 
 
-def table_row(res, model_id):
-        
+def table_row(res, model_id, dataset_id):
 
-    return "{0} & {1:0.4f} & {2:0.4f} & {3:0.4f} & {4:0.4f}\\\\ \\hline \n".format(model_id,
-                                                            res['total_acc'],
-                                                            res['total_recall'],
-                                                            res['total_precision'],
-                                                            res['total_f1'])
+
+    return "{0} & {1} & {2:0.4f} & {3:0.4f} & {4:0.4f} & {5:0.4f} \\\\ \\hline \n".format(model_id,
+                                                                                          dataset_id,
+                                                                                          res['total_acc'],
+                                                                                          res['total_recall'],
+                                                                                          res['total_precision'],
+                                                                                          res['total_f1'])
 
 def summerize(path, out_path):
 
@@ -133,28 +134,30 @@ def summerize(path, out_path):
 
                 model_id = model_name_id[model_name]
 
-                model_id = model_id if model_id != 1 or not std else 2 # simple_model with and without std and mean have same name
-    
+                model_id = mid.get_model_id(guid)
+
+                dataset_id = mid.get_dataset_id(settings.dataset)
+
                 res, error = calc_results(values)
 
                 if error:
                     print guid
-                
-                results[folder][guid] = (res, model_id)
+
+                results[folder][guid] = (res, model_id, dataset_id)
 
     for key in results.keys():
-        header = "\\begin{tabular}{|c|c|c|c|c|} \\hline\n"
-        header += "Model Name & Acc & Recall & Precision & F1 \\\\ \\hline \n"
+        header = "\\begin{tabular}{|c|c|c|c|c|c|} \\hline\n"
+        header += "Model & Dataset & Acc & Recall & Precision & F1 \\\\ \\hline \n"
         body = ""
         footer = "\\end{tabular}"
         for guid in results[key]:
             res = results[key][guid]
-            body += table_row(res[0], res[1])
+            body += table_row(res[0], res[1], dataset)
 
 
         file_name = out_path + "/" + key.replace(' ', '_') + ".tex"
 
-        print "Wirting: " + file_name 
+        print "Wirting: " + file_name
 
         with open(file_name, 'w') as f:
             f.write(header + body + footer)
