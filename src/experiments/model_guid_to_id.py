@@ -6,11 +6,11 @@ id_dict = {}
 id_dict[('simple_model', False)] = 1
 id_dict[('simple_model', True)] = 2
 id_dict[('simple_model_7_2_layer', True)] = 3
-id_dict[('csv_simple_model_7_5_5', True)] = 4
-id_dict[('csv_simple_model_7_fully_drop', True)] = 5
-id_dict[('csv_simple_model_7_nomax', True)] = 6
-id_dict[('csv_simple_model_min_7', True)] = 7
-id_dict[('csv_simple_model_min_7_drop', True)] = 8
+id_dict[('simple_model_7_5_5', True)] = 4
+id_dict[('simple_model_7_fully_drop', True)] = 5
+id_dict[('simple_model_7_nomax', True)] = 6
+id_dict[('simple_model_min_7', True)] = 7
+id_dict[('simple_model_min_7_drop', True)] = 8
 
 
 
