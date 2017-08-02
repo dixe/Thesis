@@ -11,7 +11,24 @@ if __name__ == "__main__":
    layers = [0]
 
    for s in settings:
-      net = ws.get_net(s)
+      setting = ws.get_settings(s)
 
+
+      if 'simple_model' == setting.model_name:
+            import simple_model as sm
+        elif 'simple_model_7_5_5' == setting.model_name:
+            import simple_model_7_5_5 as sm
+        elif 'simple_model_7_fully_drop' == setting.model_name:
+            import simple_model_7_fully_drop as sm
+        elif 'simple_model_7_2_layer' == setting.model_name:
+            import simple_model_7_2_layer as sm
+        elif 'simple_model_7_nomax' == setting.model_name:
+            import simple_model_7_nomax as sm
+        elif 'simple_model_min_7_drop' == setting.model_name:
+            import simple_model_min_7_drop as sm
+        elif 'simple_model_min_7' == setting.model_name:
+            import simple_model_min_7 as sm
+
+      net = sm.get_net(setting)
       for l in layers:
          tn.visualize_weights(net,l)
