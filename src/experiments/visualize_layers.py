@@ -8,7 +8,7 @@ if __name__ == "__main__":
    settings_file_path = "settings_to_test.txt"
    settings = list(map(lambda x : str(x.guid), ss.load_settings_from_file(settings_file_path)))
 
-   layers = [0]
+   layers = [0,2,4]
 
    for s in settings:
       setting = ws.get_settings(s)
