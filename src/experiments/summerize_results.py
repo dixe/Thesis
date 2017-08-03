@@ -78,7 +78,7 @@ def calc_results(values):
     res['avg_acc'] /= 1.0 * len(tp)
 
     try:
-        res['total_acc'] = (1.0 * res['total_tp'] + res['total_tn']) / (res['total_tp'] + res['total_tn'] + res['total_fp'] + fn_i)
+        res['total_acc'] = (1.0 * res['total_tp'] + res['total_tn']) / (res['total_tp'] + res['total_tn'] + res['total_fp'] + res['total_fn'])
     except:
         res['total_acc'] = 0
         error = True
@@ -141,23 +141,35 @@ def summerize(path, out_path):
                 res, error = calc_results(values)
 
                 if error:
-                    print guid
+                    print(guid)
+
+                if not int(dataset_id) in [2,4,8]:
+                    print(guid)
+
 
                 results[folder][guid] = (res, model_id, dataset_id)
+
 
     for key in results.keys():
         header = "\\begin{tabular}{|c|c|c|c|c|c|} \\hline\n"
         header += "Model & Dataset & Acc & Recall & Precision & F1 \\\\ \\hline \n"
         body = ""
         footer = "\\end{tabular}"
-        for guid in results[key]:
+
+
+        # sort guids by (model_id, dataset_id)
+        guids = sorted(list(results[key].keys()), key=lambda x : (results[key][x][1],(results[key][x][2])))
+
+
+
+        for guid in guids:
             res = results[key][guid]
-            body += table_row(res[0], res[1], dataset)
+            body += table_row(res[0], res[1], res[2])
 
 
         file_name = out_path + "/" + key.replace(' ', '_') + ".tex"
 
-        print "Wirting: " + file_name
+        print("Wirting: " + file_name)
 
         with open(file_name, 'w') as f:
             f.write(header + body + footer)
@@ -174,7 +186,7 @@ def summerize(path, out_path):
 
 if __name__ == "__main__":
 
-    path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
+    path = "test_folder/"
 
     out_path = "final_exps/"
 
