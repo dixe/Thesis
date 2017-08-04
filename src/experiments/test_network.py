@@ -7,6 +7,7 @@ import cv2
 from keras.preprocessing.image import load_img, img_to_array
 import utils as ut
 from keras import backend as K
+import os
 
 try:
     import PIL.Image as Image
@@ -137,6 +138,13 @@ def evaluate_model_and_report(net):
 
 def visualize_weights(net, layer=0):
 
+    guid = str(net.settings.guid)[-7:-1]
+
+    file_name = '{0}_{1}_layer_{2}.png'.format(guid, net.settings.dataset, layer)
+
+    if os.path.exists(file_name):
+        return
+
     model = net.get_model_test()
 
     weights = model.layers[layer].get_weights()
@@ -151,9 +159,8 @@ def visualize_weights(net, layer=0):
         img_shape=(img_size,img_size), tile_shape=(10,10),
         tile_spacing=(1,1))
 
-    guid = str(net.settings.guid)[-7:-1]
 
-    cv2.imwrite('{0}_{1}_layer_{2}.png'.format(guid, net.settings.dataset, layer), img)
+    cv2.imwrite(file_name, img)
 
 
 def visualize_layer(net, layer, img_num = 0):

@@ -155,6 +155,28 @@ def unique_models():
         print(n)
 
 
+def load_by_name_dataset_std(model_name, dataset_name, sample_std):
+
+    conn = get_db_conn()
+
+    c = conn.cursor()
+
+    t = (model_name, dataset_name)
+
+    c.execute('SELECT * FROM settings WHERE model_name = ? and dataset = ?', t)
+    db_settings = c.fetchall()
+
+    settings = []
+    for s in db_settings:
+        name = "settings/{0}.nns".format(s[0])
+
+        setting = load_settings_file(name, s[0])
+        if setting.sample_std == sample_std:
+            settings.append(setting)
+
+    return settings
+
+
 def update_description(guid_substring, new_description):
     setting = get_settings(guid_substring)
 
@@ -192,6 +214,14 @@ if __name__ == "__main__":
 
         update_description(guid, description)
 
+        exit()
+
+    if 'test' in sys.argv:
+        guid = sys.argv[-1]
+
+        print("Guid = " + guid)
+
+        print(load_settings(guid)[0])
         exit()
 
     model_name = sys.argv[-1]

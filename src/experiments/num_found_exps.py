@@ -24,6 +24,7 @@ def found_annos(path, claas_path = None):
         found = {}
         folders = {}
 
+
         files = len(fs)
         i = 0
 
@@ -34,7 +35,7 @@ def found_annos(path, claas_path = None):
             folders['claas' + folder] = folder
 
         for f in fs:
-            print "{0}/{1}".format(i, files)
+            print("{0}/{1}".format(i, files))
             i += 1
 
             if claas:
@@ -48,10 +49,11 @@ def found_annos(path, claas_path = None):
 
                     annos = xml_p.get_annotations()
 
-                    total_annos['claas' + folder] += len(annos)
+                    total_annos[ folder] += len(annos)
 
                     for a in annos:
                         cv2.circle(anno_img, a.center, a.radius, 255, -1)
+
 
                         found['claas' + folder] += 1 if sum(np.logical_and(anno_img.flatten(),bin_map.flatten())) > 1 else 0
 
@@ -82,17 +84,17 @@ def found_annos(path, claas_path = None):
 
                         anno_img = np.zeros((240,376))
 
-        with open('num_found_results.csv', 'w') as outf:
+        with open('{0}_num_found_results.csv'.format(folder), 'w') as outf:
             outf.write('guid, folder, found, total\n')
             for guid in total_annos:
                 outf.write("{0}, {1}, {2}, {3}\n".format(guid, folders[guid], found[guid], total_annos[guid]))
 
 if __name__ == "__main__":
 
-    path = "test_folder"
+    path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
     if 'claas' in sys.argv:
-        path = "E:/Speciale/CLAAS/DIKU Test dataset/Annotated/"
-        claas_path = "E:/Speciale/CLAAS/GQC Algorithm Test Output/"
+        path = "L:/DIKU Test dataset/Annotated/"
+        claas_path = "L:/GQC Algorithm Test Output/"
         found_annos(path, claas_path)
     else:
         found_annos(path)

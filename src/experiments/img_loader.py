@@ -343,8 +343,8 @@ if __name__ == "__main__":
 
     path = sys.argv[sys.argv.index("path") +1]
 
-    print path
+    print(path)
 
 
     if "count" in sys.argv:
-        print len(get_all_annotations(path))
+        print(len(get_all_annotations(path)))
