@@ -41,9 +41,10 @@ def make_cor_plot(data):
 def get_all_cor_graphs(path):
 
     for r, ds, fs in os.walk(path):
-
+        folder = r.split('/')[-1]
         data = []
 
+        print folder
         xml_file = r + "/" + "Images Metadata Log.xml"
         if not os.path.exists(xml_file):
             continue
@@ -63,7 +64,7 @@ def get_all_cor_graphs(path):
 
         lgd = make_cor_plot(np.array(data))
 
-        folder = r.split('/')[-1]
+
 
         plt.savefig("graphs/{0}_correlation_graph.png", bbox_extra_artists=(lgd,), bbox_inches='tight')
         plt.gcf().clear()
@@ -72,5 +73,5 @@ def get_all_cor_graphs(path):
 
 if __name__ == "__main__":
     path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
-    path = "test_folder"
+
     get_all_cor_graphs(path)
