@@ -43,8 +43,6 @@ def found_annos(path, claas_path = None):
                     frame = str(int(f.split('-')[0]))
                     xml_p =  IML.XmlParser(xml_file, "all_impurities", frame)
 
-                    xml_p =  IML.XmlParser(xml_file, "all_impurities", frame)
-
                     bin_map = cv2.imread(r+'/' +f, 0)
 
                     annos = xml_p.get_annotations()
