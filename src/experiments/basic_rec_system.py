@@ -254,7 +254,7 @@ def compare_setting(net, img_path, force = False):
 
                 #TODO Generate ground truth bin_maps - needs annotation first
 
-                    
+
                 bin_map, total_gen_time, total_pred_time = predict_img(model, img, img_name, root, window_size = net.settings.img_width, stride = 1, bin_map = True)
 
                 # calc score based on image ground truth
@@ -309,8 +309,8 @@ def run_multiple_settings(settings, img_path, force):
         net = sm.get_net(setting)
         try:
             compare_setting(net, img_path, force)
-        except Exception as e:            
-            file_name = img_path + "/{0}_error.csv".format(net.settings.guid) 
+        except Exception as e:
+            file_name = img_path + "/{0}_error.csv".format(net.settings.guid)
             print "Error in {0}, saving to {1}".format(net.settings.guid, file_name)
             with open(file_name, 'w') as f:
                 f.write("Error in {0}\n".format(net.settings.guid))
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         settings_file_path = "settings_to_test.txt"
         settings = list(map(lambda x : str(x.guid), ss.load_settings_from_file(settings_file_path)))
 
-        force = 'force' in sys.argv            
+        force = 'force' in sys.argv
 
         path = "/home/ltm741/thesis/datasets/final_test_sets/three_folder_test_set/"
         print settings

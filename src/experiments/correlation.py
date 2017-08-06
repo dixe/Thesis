@@ -138,7 +138,7 @@ def plot_all_graphs(cor):
 
                 if cor:
                     pearson, spearman = res
-                    print "{0} & {1} & {2:0.6f} & {3:0.6f}".format(guid, folder, spearman[0], spearman[1])
+                    print "{0} & {1} & {2:0.6f} & {3:0.6f}".format(guid, folder, pearson[0], pearson[1])
 
 
 
