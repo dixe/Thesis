@@ -48,6 +48,12 @@ def evaluate_model_ae(net):
 
     return res
 
+
+def model_sum(net):
+    model = net.get_model_test()
+
+    print model.summary()
+
 def evaluate_model(net):
 
     print "eval"
@@ -138,7 +144,7 @@ def evaluate_model_and_report(net):
 
 def visualize_weights(net, layer=0):
 
-    guid = str(net.settings.guid)[-7:-1]
+    guid = net.settings.guid
 
     file_name = '{0}_{1}_layer_{2}.png'.format(guid, net.settings.dataset, layer)
 
@@ -203,7 +209,7 @@ def visualize_layer(net, layer, img_num = 0):
 
     # just take one of the images
     imgs = ut.visualize_layer(activations[img_num])
-    
+
 
     for i in range(len(imgs)):
         cv2.imwrite('{0}/{1}_layer_{2}_{3}.png'.format(layer_dir, net.settings.guid, layer, i), imgs[i])
@@ -368,6 +374,8 @@ if __name__ == "__main__":
         fun = lambda model : visualize_layer(model, layer)
         callback = fun
 
+    if 'sum' in sys.argv:
+        callback = model_sum
 
     sys.argv = filter(lambda x : x != '',sys.argv )
     guid_substring = sys.argv[-1]
